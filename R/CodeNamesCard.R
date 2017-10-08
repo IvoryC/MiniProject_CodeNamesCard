@@ -23,14 +23,20 @@ option_list = list(
 	make_option(opt_str=c("-o", "--outfile"), type="character", 
 							default="SpyMap.png", 
 							help="file name to save image"),
-	make_option(opt_str=c("-s", "--setSeed"), type="integer", default=NULL, 
-							help="file name to save image")
+	make_option(opt_str=c("-s", "--set-seed"), type="integer", default=NULL, 
+							help="file name to save image", dest="ss")
 ); 
 opt_parser = OptionParser(option_list=option_list)
 opt = parse_args(opt_parser)
 
-# If -s is not null
-set.seed(opt$setSeed)
+# for development
+opt
+save("opt", file="testing.Rdata")
+
+# If -s is not null, set the seed.
+if (!is.null(opt$ss)){
+	set.seed(opt$ss)
+}
 
 # If either -h or -w is NULL, 
 # if both hieght and width are null, set both to 5.

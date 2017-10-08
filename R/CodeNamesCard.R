@@ -15,7 +15,7 @@ option_list = list(
 							default=1, 
 							help="number of assisins"),
 	make_option(opt_str=c("-i", "--inocents"), type="integer", default=NULL, 
-							help="number of innocent by-stander squares"),
+							help="number of innocent by-stander squares", dest="ib"),
 	make_option(opt_str=c("-r", "--red"), type="integer", default=NULL, 
 							help="number of red team squares"),
 	make_option(opt_str=c("-b", "--blue"), type="integer", default=NULL, 
@@ -38,24 +38,59 @@ if (!is.null(opt$ss)){
 	set.seed(opt$ss)
 }
 
-# If either -h or -w is NULL, 
 # if both hieght and width are null, set both to 5.
 # if only one is NULL, set it to match the other.
+if (is.null(opt$hieght) & is.null(opt$width)){
+	opt$hieght=5
+	opt$width=5
+} else {
+	if (is.null(opt$hieght)) {
+		opt$hieght = opt$width
+	}
+	if (is.null(opt$width)) {
+		opt$width = opt$hieght
+	}
+}
 
 # Calculate total squares
-# Calculate open squares
+ts = opt$width * opt$hieght
+
 
 # if both are null, 
+if (is.null(opt$blue) & is.null(opt$red)){
 	#if -i is null, calculate -i as 25% of total squares
-	#if i + 3 < open squares then print error message
-		# else update open squares
+	if (is.null(opt$ib)){
+		opt$ib = floor(ts * .25)
+	}
+	# Calculate open squares
+	open = ts - opt$assasin - opt$ib
+	#if open squares < 3 then print error message
+	if (open < 3){
+		stop("Not enough squares in the grid.\n")
+	}
 	## Make sure open squares is odd
-	# if open squares mod 2 == 0 # if the number of open squares is even
-		# if -i is >= open squares / 2, subtract one from -i and add 1 to open squares
-			# else, add 1 to -i and subtract one from open squares
+	# One team has to go first, the other team has to have 
+	# a -1 addvantage to make up for it.
+	# If the number of open squares is even, 
+	# make it odd by adding or subtracting one innocent
+	if (open %% 2 == 0){
+		if (opt$ib > open/2){
+			opt$ib = opt$ib - 1
+			open = open + 1
+		} else {
+			opt$ib = opt$ib + 1
+			open = open - 1
+		}
+	}
 	# randomly pick red or blue to be "first", the other second
+	sample = sample(c("blue", "red"), size=2, replace = F)
+	first = sample[1]
+	second = sample[2]
 	# assign first to get open squares /2 rounded up
+	opt[[first]] = ceiling(open/2)
 	# assign second to get open squares /2 roudned down
+	opt[[second]] = floor(open/2)
+}
 #if exactly one of red or blue is null, 
 	# assign the one that is not null to be first, the other second
 	# assign second to get first - 1 squares

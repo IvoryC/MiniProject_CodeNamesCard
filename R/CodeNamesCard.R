@@ -59,7 +59,7 @@ dev.off()
 
 # if innocent >0 design and draw tan square image
 
-
+system(paste("open", opt$outfile))
 
 }
 

@@ -30,10 +30,18 @@ names(slotIds) = c(rep("assasin", assasin),
 groups = split(slotIds, f=names(slotIds))
 columns = slotIds %% width +1
 rows = (slotIds-1) %/% width +1
-											 
+
+colors = c(rep("black", assasin),
+					 rep("tan", ib),
+					 rep("blue", blue),
+					 rep("red", red))
 
 
 ### Make image
+png(filename=opt$outfile)
+par(mar=rep(1,4))
+symbols(x=columns, y=rows, squares=rep(.9,ts), inches=F, bg=colors)
+dev.off()
 
 # plot Grid
 # for the image size, assume that each square will be 1 cm square

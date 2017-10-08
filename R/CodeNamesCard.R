@@ -55,6 +55,33 @@ if (is.null(opt$hieght) & is.null(opt$width)){
 # Calculate total squares
 ts = opt$width * opt$hieght
 
+# Notice that the order of handling cases matters
+# first - if both blue and red are specified
+# second - if neighter are specified 
+#     (if they were specified, this is correctly skipped)
+# last (as an else from the second) - if one is null
+#     (where we can assume that the other is NOT null)
+
+# if neither -r nor -b is null
+if (!is.null(opt$blue) & !is.null(opt$red)){
+	# calculate open squares, total - assasins - red - blue
+	open = ts - opt$assasin - opt$blue - opt$red
+	if (open < 0) {
+		stop("Not enough squares in the grid.\n")
+	}
+	# if -i is specified,
+	# if -i == open squares ---> great
+	# if -i != open squares, error message
+	if ( (!is.null(opt$ib)) & (opt$ib != open) ) {
+		stop("This doesn't add up.")
+	}
+	# if -i is null, set it equal to open squares.
+	if (is.null(opt$ib)){
+		opt$ib = open
+	}
+}
+	
+
 
 # if both are null, 
 if (is.null(opt$blue) & is.null(opt$red)){
@@ -90,22 +117,40 @@ if (is.null(opt$blue) & is.null(opt$red)){
 	opt[[first]] = ceiling(open/2)
 	# assign second to get open squares /2 roudned down
 	opt[[second]] = floor(open/2)
-}
+} else {
+	
 #if exactly one of red or blue is null, 
 	# assign the one that is not null to be first, the other second
 	# assign second to get first - 1 squares
-	# Calculate open squares, total - assasins - red - blue; if <0, error message
+	if (is.null(opt$blue)){
+		first="red"
+		second="blue"
+		opt$blue = opt$red - 1
+	}
+	if (is.null(opt$red)){
+		first="blue"
+		second="red"
+		opt$red = opt$blue - 1
+	}
+	# Calculate open squares, total - assasins - red - blue
+	open = ts - opt$assasins - opt$red - opt$blue
+	#if <0, error message
+	if (open < 0) {
+		stop("Not enough squares in the grid.\n")
+	}
+	if (open == 0) {
+		warning("There are no inocent by-standers on this map.\n", call.=F)
+	}
 	# if -i is null, set -i to open squares
-	# if -i is specified, 
-		# if -i != open squares, error message
-
-# if neither -r nor -b is null
-	# calculate open squares, total - assasins - red - blue
-	# if -i is specified,
-		# if -i == open squares ---> great
-		# if -i != open squares, error message
-	# if -i is null, set it equal to open squares.
-
+	if (is.null(opt$ib)){
+		opt$ib = open
+	}
+	# if -i is specified and -i != open squares, error message
+	if ( (!is.null(opt$ib)) & (opt$ib != open)){
+		stop("This doesn't add up.")
+	}
+}
+	
 
 # for developemnt, print number of 
 # total squares in grid, -h and -w

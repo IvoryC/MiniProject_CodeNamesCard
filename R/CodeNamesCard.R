@@ -6,61 +6,61 @@ library("optparse")
 
 main <- function(){
 	
-opt = processOptions()
+	opt = processOptions()
 	
 	ts = opt$width * opt$hieght
-
-# for developemnt, print number of 
-# total squares in grid, -h and -w
-# assasins, red, blue, by-standers
-print(paste("total squares in grid:", ts))
-#cat(unlist(opt), sep='\n')
-for (i in 1:length(opt)){
-	print(paste0(names(opt)[i],": ", opt[[i]]))
-}
-
-attach(opt) # so we don't have to write opt$ every time
-
-### Assign squares in grid
-slotIds = sample(x=1:ts, size=ts, replace=F)
-names(slotIds) = c(rep("assasin", assasin),
-											 rep("ib", ib),
-											 rep("blue", blue),
-											 rep("red", red))
-groups = split(slotIds, f=names(slotIds))
-columns = slotIds %% width +1
-rows = (slotIds-1) %/% width +1
-
-colors = c(rep("black", assasin),
-					 rep("tan", ib),
-					 rep("blue", blue),
-					 rep("red", red))
-
-
-### Make image
-png(filename=opt$outfile)
-par(mar=rep(1,4))
-symbols(x=columns, y=rows, squares=rep(.9,ts), inches=F, bg=colors)
-dev.off()
-
-# plot Grid
-# for the image size, assume that each square will be 1 cm square
-# and a .2 cm gap between each row and each column, 
-# and that there is a 1 cm border outside of the grid itself.
-
-# design and draw red square image
-
-
-# design and draw blue square image
-
-
-# if assasins >0 design and draw black square image
-
-
-# if innocent >0 design and draw tan square image
-
-system(paste("open", opt$outfile))
-
+	
+	# for developemnt, print number of 
+	# total squares in grid, -h and -w
+	# assasins, red, blue, by-standers
+	print(paste("total squares in grid:", ts))
+	#cat(unlist(opt), sep='\n')
+	for (i in 1:length(opt)){
+		print(paste0(names(opt)[i],": ", opt[[i]]))
+	}
+	
+	attach(opt) # so we don't have to write opt$ every time
+	
+	### Assign squares in grid
+	slotIds = sample(x=1:ts, size=ts, replace=F)
+	names(slotIds) = c(rep("assasin", assasin),
+										 rep("ib", ib),
+										 rep("blue", blue),
+										 rep("red", red))
+	groups = split(slotIds, f=names(slotIds))
+	columns = slotIds %% width +1
+	rows = (slotIds-1) %/% width +1
+	
+	colors = c(rep("black", assasin),
+						 rep("tan", ib),
+						 rep("blue", blue),
+						 rep("red", red))
+	
+	
+	### Make image
+	png(filename=opt$outfile)
+	par(mar=rep(1,4))
+	symbols(x=columns, y=rows, squares=rep(.9,ts), inches=F, bg=colors)
+	dev.off()
+	
+	# plot Grid
+	# for the image size, assume that each square will be 1 cm square
+	# and a .2 cm gap between each row and each column, 
+	# and that there is a 1 cm border outside of the grid itself.
+	
+	# design and draw red square image
+	
+	
+	# design and draw blue square image
+	
+	
+	# if assasins >0 design and draw black square image
+	
+	
+	# if innocent >0 design and draw tan square image
+	
+	system(paste("open", opt$outfile))
+	
 }
 
 ### Functions
@@ -69,23 +69,23 @@ processOptions <- function(opt){
 	#args <- commandArgs(trailingOnly = T)
 	option_list = list(
 		h=make_option(opt_str=c("-H", "--hieght"), type="integer", default=NULL, 
-								help="number of rows in grid"),
+									help="number of rows in grid"),
 		w=make_option(opt_str=c("-W", "--width"), type="integer", default=NULL, 
-								help="number of columns in grid"),
+									help="number of columns in grid"),
 		a=make_option(opt_str=c("-a", "--assasin"), type="integer", 
-								default=1, 
-								help="number of assisins"),
+									default=1, 
+									help="number of assisins"),
 		i=make_option(opt_str=c("-i", "--inocents"), type="integer", default=NULL, 
-								help="number of innocent by-stander squares", dest="ib"),
+									help="number of innocent by-stander squares", dest="ib"),
 		r=make_option(opt_str=c("-r", "--red"), type="integer", default=NULL, 
-								help="number of red team squares"),
+									help="number of red team squares"),
 		b=make_option(opt_str=c("-b", "--blue"), type="integer", default=NULL, 
-								help="number of blue team squares"),
+									help="number of blue team squares"),
 		o=make_option(opt_str=c("-o", "--outfile"), type="character", 
-								default="SpyMap.png", 
-								help="file name to save image"),
+									default="SpyMap.png", 
+									help="file name to save image"),
 		s=make_option(opt_str=c("-s", "--set-seed"), type="integer", default=NULL, 
-								help="file name to save image", dest="ss")
+									help="file name to save image", dest="ss")
 	); 
 	opt_parser = OptionParser(option_list=option_list)
 	opt = parse_args(opt_parser)
@@ -120,7 +120,9 @@ processOptions <- function(opt){
 	# first - if both blue and red are specified
 	# second - if neighter are specified 
 	#     (if they were specified, this is correctly skipped)
-	# last (as an else from the second) - if one is null
+	# last - if either one is null 
+	#     (which must be exactly one, since both values would have 
+	#     been set by not if both or neither  had been specified.)
 	#     (where we can assume that the other is NOT null)
 	
 	# if neither -r nor -b is null
@@ -133,7 +135,7 @@ processOptions <- function(opt){
 		# if -i is specified,
 		# if -i == open squares ---> great
 		# if -i != open squares, error message
-		if ( (!is.null(opt$ib)) & (opt$ib != openSq) ) {
+		if ( (!is.null(opt$ib)) && (opt$ib != openSq) ) {
 			stop("This doesn't add up.")
 		}
 		# if -i is null, set it equal to open squares.
@@ -178,22 +180,22 @@ processOptions <- function(opt){
 		opt[[first]] = ceiling(openSq/2)
 		# assign second to get open squares /2 roudned down
 		opt[[second]] = floor(openSq/2)
-	} else {
-		
-		#if exactly one of red or blue is null, 
-		# assign the one that is not null to be first, the other second
-		# assign second to get first - 1 squares
+	}
+	
+	#if exactly one of red or blue is null, 
+	# assign the one that is not null to be first, the other second
+	# assign second to get first - 1 squares
+	if (is.null(opt$blue) | is.null(opt$red)){
 		if (is.null(opt$blue)){
 			first="red"
 			second="blue"
 			opt$blue = opt$red - 1
-		}
-		if (is.null(opt$red)){
+		} else { # in other words if (is.null(opt$red)){
 			first="blue"
 			second="red"
 			opt$red = opt$blue - 1
 		}
-		# Calculate open squares, total - assasins - red - blue
+		# Calculate open squares
 		openSq = ts - opt$assasins - opt$red - opt$blue
 		#if <0, error message
 		if (openSq < 0) {
@@ -207,7 +209,7 @@ processOptions <- function(opt){
 			opt$ib = openSq
 		}
 		# if -i is specified and -i != open squares, error message
-		if ( (!is.null(opt$ib)) & (opt$ib != openSq)){
+		if ( (!is.null(opt$ib)) && (opt$ib != openSq)){
 			stop("This doesn't add up.")
 		}
 	}

@@ -126,19 +126,19 @@ processOptions <- function(opt){
 	# if neither -r nor -b is null
 	if (!is.null(opt$blue) & !is.null(opt$red)){
 		# calculate open squares, total - assasins - red - blue
-		open = ts - opt$assasin - opt$blue - opt$red
-		if (open < 0) {
+		openSq = ts - opt$assasin - opt$blue - opt$red
+		if (openSq < 0) {
 			stop("Not enough squares in the grid.\n")
 		}
 		# if -i is specified,
 		# if -i == open squares ---> great
 		# if -i != open squares, error message
-		if ( (!is.null(opt$ib)) & (opt$ib != open) ) {
+		if ( (!is.null(opt$ib)) & (opt$ib != openSq) ) {
 			stop("This doesn't add up.")
 		}
 		# if -i is null, set it equal to open squares.
 		if (is.null(opt$ib)){
-			opt$ib = open
+			opt$ib = openSq
 		}
 	}
 	
@@ -151,9 +151,9 @@ processOptions <- function(opt){
 			opt$ib = floor(ts * .25)
 		}
 		# Calculate open squares
-		open = ts - opt$assasin - opt$ib
+		openSq = ts - opt$assasin - opt$ib
 		#if open squares < 3 then print error message
-		if (open < 3){
+		if (openSq < 3){
 			stop("Not enough squares in the grid.\n")
 		}
 		## Make sure open squares is odd
@@ -161,13 +161,13 @@ processOptions <- function(opt){
 		# a -1 addvantage to make up for it.
 		# If the number of open squares is even, 
 		# make it odd by adding or subtracting one innocent
-		if (open %% 2 == 0){
-			if (opt$ib > open/2){
+		if (openSq %% 2 == 0){
+			if (opt$ib > openSq/2){
 				opt$ib = opt$ib - 1
-				open = open + 1
+				openSq = openSq + 1
 			} else {
 				opt$ib = opt$ib + 1
-				open = open - 1
+				openSq = openSq - 1
 			}
 		}
 		# randomly pick red or blue to be "first", the other second
@@ -175,9 +175,9 @@ processOptions <- function(opt){
 		first = sample[1]
 		second = sample[2]
 		# assign first to get open squares /2 rounded up
-		opt[[first]] = ceiling(open/2)
+		opt[[first]] = ceiling(openSq/2)
 		# assign second to get open squares /2 roudned down
-		opt[[second]] = floor(open/2)
+		opt[[second]] = floor(openSq/2)
 	} else {
 		
 		#if exactly one of red or blue is null, 
@@ -194,20 +194,20 @@ processOptions <- function(opt){
 			opt$red = opt$blue - 1
 		}
 		# Calculate open squares, total - assasins - red - blue
-		open = ts - opt$assasins - opt$red - opt$blue
+		openSq = ts - opt$assasins - opt$red - opt$blue
 		#if <0, error message
-		if (open < 0) {
+		if (openSq < 0) {
 			stop("Not enough squares in the grid.\n")
 		}
-		if (open == 0) {
+		if (openSq == 0) {
 			warning("There are no inocent by-standers on this map.\n", call.=F)
 		}
 		# if -i is null, set -i to open squares
 		if (is.null(opt$ib)){
-			opt$ib = open
+			opt$ib = openSq
 		}
 		# if -i is specified and -i != open squares, error message
-		if ( (!is.null(opt$ib)) & (opt$ib != open)){
+		if ( (!is.null(opt$ib)) & (opt$ib != openSq)){
 			stop("This doesn't add up.")
 		}
 	}

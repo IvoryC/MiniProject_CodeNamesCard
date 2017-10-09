@@ -68,23 +68,23 @@ processOptions <- function(opt){
 	# Take arguments from the command line
 	#args <- commandArgs(trailingOnly = T)
 	option_list = list(
-		make_option(opt_str=c("-h", "--hieght"), type="integer", default=NULL, 
+		h=make_option(opt_str=c("-H", "--hieght"), type="integer", default=NULL, 
 								help="number of rows in grid"),
-		make_option(opt_str=c("-w", "--width"), type="integer", default=NULL, 
+		w=make_option(opt_str=c("-W", "--width"), type="integer", default=NULL, 
 								help="number of columns in grid"),
-		make_option(opt_str=c("-a", "--assasin"), type="integer", 
+		a=make_option(opt_str=c("-a", "--assasin"), type="integer", 
 								default=1, 
 								help="number of assisins"),
-		make_option(opt_str=c("-i", "--inocents"), type="integer", default=NULL, 
+		i=make_option(opt_str=c("-i", "--inocents"), type="integer", default=NULL, 
 								help="number of innocent by-stander squares", dest="ib"),
-		make_option(opt_str=c("-r", "--red"), type="integer", default=NULL, 
+		r=make_option(opt_str=c("-r", "--red"), type="integer", default=NULL, 
 								help="number of red team squares"),
-		make_option(opt_str=c("-b", "--blue"), type="integer", default=NULL, 
+		b=make_option(opt_str=c("-b", "--blue"), type="integer", default=NULL, 
 								help="number of blue team squares"),
-		make_option(opt_str=c("-o", "--outfile"), type="character", 
+		o=make_option(opt_str=c("-o", "--outfile"), type="character", 
 								default="SpyMap.png", 
 								help="file name to save image"),
-		make_option(opt_str=c("-s", "--set-seed"), type="integer", default=NULL, 
+		s=make_option(opt_str=c("-s", "--set-seed"), type="integer", default=NULL, 
 								help="file name to save image", dest="ss")
 	); 
 	opt_parser = OptionParser(option_list=option_list)

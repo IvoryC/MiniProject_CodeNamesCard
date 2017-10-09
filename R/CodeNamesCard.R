@@ -196,7 +196,7 @@ processOptions <- function(opt){
 			opt$red = opt$blue - 1
 		}
 		# Calculate open squares
-		openSq = ts - opt$assasins - opt$red - opt$blue
+		openSq = ts - opt$assasin - opt$red - opt$blue
 		#if <0, error message
 		if (openSq < 0) {
 			stop("Not enough squares in the grid.\n")

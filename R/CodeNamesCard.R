@@ -182,12 +182,12 @@ processOptions <- function(opt){
 		}
 		# randomly pick red or blue to be "first", the other second
 		sample = sample(c("blue", "red"), size=2, replace = F)
-		first = sample[1]
-		second = sample[2]
+		opt$first = sample[1]
+		opt$second = sample[2]
 		# assign first to get open squares /2 rounded up
-		opt[[first]] = ceiling(openSq/2)
+		opt[[opt$first]] = ceiling(openSq/2)
 		# assign second to get open squares /2 roudned down
-		opt[[second]] = floor(openSq/2)
+		opt[[opt$second]] = floor(openSq/2)
 	}
 	
 	#if exactly one of red or blue is null, 
@@ -195,12 +195,12 @@ processOptions <- function(opt){
 	# assign second to get first - 1 squares
 	if (is.null(opt$blue) | is.null(opt$red)){
 		if (is.null(opt$blue)){
-			first="red"
-			second="blue"
+			opt$first="red"
+			opt$second="blue"
 			opt$blue = opt$red - 1
 		} else { # in other words if (is.null(opt$red)){
-			first="blue"
-			second="red"
+			opt$first="blue"
+			opt$second="red"
 			opt$red = opt$blue - 1
 		}
 		# Calculate open squares

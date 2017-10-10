@@ -22,7 +22,7 @@ https://play.google.com/store/apps/details?id=com.czechgames.codenames
 ### R
 Use `Rscript R/CodeNamesCard.R --help` to see the available arguments for the R version of the program.
 
-The current version represents the baseline functionality.  It will produce a 5x5 grid, as a png file.  The indicates assassins, by-standers, and red/blue team squares.  The border indicates which team should go first.  Arguments can set shape of the grid and the number of squares that should be assassins, by-standers, red team squares and blue team squares, with reasonable defaults for all parameters.
+The current version represents the baseline functionality.  It will produce a 5x5 grid, as a png file.  The color indicates assassins, by-standers, and red/blue team squares.  The border indicates which team should go first.  Arguments can set shape of the grid and the number of squares that should be assassins, by-standers, red team squares and blue team squares, with reasonable defaults for all parameters.
 
 The style does not match the game card.  It conveys the same information in the same way, but it has a very different appearance.  Making the appearance match is the next step for this program.  
 

@@ -58,7 +58,7 @@ main <- function(){
 	locY=c(yMid, yMax, yMid, yMin) #left, top, right, bottom
 	short=.2
 	long=.5
-	symbols(x=locX, y=locY, xpd=T, add=T, inches=F, bg=c("blue","red", "blue", "red"),
+	symbols(x=locX, y=locY, xpd=T, add=T, inches=F, bg=c(first),
 		rectangles=matrix(nrow=4, ncol=2, 
 			data=cbind(c(short, long, short, long), 
 				c(long, short, long, short))),

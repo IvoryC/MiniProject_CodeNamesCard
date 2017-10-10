@@ -38,27 +38,35 @@ main <- function(){
 	
 	
 	### Make image
-	png(filename=opt$outfile)
-	par(mar=rep(1,4))
-	symbols(x=columns, y=rows, squares=rep(.9,ts), inches=F, bg=colors)
-	dev.off()
-	
 	# plot Grid
 	# for the image size, assume that each square will be 1 cm square
 	# and a .2 cm gap between each row and each column, 
 	# and that there is a 1 cm border outside of the grid itself.
+	png(filename=opt$outfile)
+	par(mar=rep(1,4))
+	symbols(x=columns, y=rows, squares=rep(.9,ts), inches=F, bg=colors,
+	xaxt="n", yaxt="n")
 	
-	# design and draw red square image
+	# indicate which team goes first by adding colored rectangles at the border
+	xMin=par("usr")[1]
+	xMax=par("usr")[2]
+	xMid=mean(c(xMin, xMax))
+	locX=c(xMin, xMid, xMax, xMid) #left, top, right, bottom
+	yMin=par("usr")[3]
+	yMax=par("usr")[4]
+	yMid=mean(c(yMin, yMax))
+	locY=c(yMid, yMax, yMid, yMin) #left, top, right, bottom
+	short=.2
+	long=.5
+	symbols(x=locX, y=locY, xpd=T, add=T, inches=F, bg=c("blue","red", "blue", "red"),
+		rectangles=matrix(nrow=4, ncol=2, 
+			data=cbind(c(short, long, short, long), 
+				c(long, short, long, short))),
+			)
+
+	dev.off()
 	
-	
-	# design and draw blue square image
-	
-	
-	# if assasins >0 design and draw black square image
-	
-	
-	# if innocent >0 design and draw tan square image
-	
+	# Show the saved image (works on unix, not sure if this works on windows)
 	system(paste("open", opt$outfile))
 	
 }

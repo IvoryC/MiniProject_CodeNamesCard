@@ -8,6 +8,9 @@ Code Names Card
 import argparse
 import random
 import numpy as np
+from matplotlib.patches import Rectangle
+from matplotlib.collections import PatchCollection
+import matplotlib.pyplot as plt
 
 
 def retrieve_args():
@@ -157,9 +160,12 @@ def main():
 	args, ts = process_grid_size(args)
 	args, first = process_square_types(args, ts)
 
+	gap = .2
+	border = .1
+
 	slotIds = np.array(random.sample(range(ts), ts))
-	columns = sI_array % args.width
-	rows = sI_array // args.width
+	columns = slotIds % args.width + border
+	rows = slotIds // args.width + border
 
 	square_type = ["assassin"] * args.assassin + ["ib"] * args.ib + ["blue"] * args.blue + ["red"] * args.red
 	types_dict = {slotIds[i]:square_type[i] for i in range(ts)}
@@ -167,7 +173,17 @@ def main():
 	colors = ["black"] * args.assassin + ["tan"] * args.ib + ["blue"] * args.blue + ["red"] * args.red
 	colors_dict = {slotIds[i]:colors[i] for i in range(ts)}
 
-	
+	patches = []
+	for i in range(ts):
+		space = Rectangle([columns[i], rows[i]], width=(1 - gap), height=(1 - gap), color=colors_dict[i])
+		patches.append(space)
+
+	fig, ax = plt.subplots()
+
+	pc = PatchCollection(patches)
+	ax.add_collection(pc)
+
+	plt.show()
 
 
 	print "total squares in grid: %d" % ts

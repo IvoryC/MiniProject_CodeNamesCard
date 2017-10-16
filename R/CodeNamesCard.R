@@ -8,11 +8,11 @@ main <- function(){
 	
 	opt = processOptions()
 	
-	ts = opt$width * opt$hieght
+	ts = opt$width * opt$height
 	
 	# for developemnt, print number of 
 	# total squares in grid, -h and -w
-	# assasins, red, blue, by-standers
+	# assassin, red, blue, by-standers
 	print(paste("total squares in grid:", ts))
 	#cat(unlist(opt), sep='\n')
 	for (i in 1:length(opt)){
@@ -24,7 +24,7 @@ main <- function(){
 	
 	### Assign squares in grid
 	slotIds = sample(x=1:ts, size=ts, replace=F)
-	names(slotIds) = c(rep("assasin", assasin),
+	names(slotIds) = c(rep("assassin", assassin),
 										 rep("ib", ib),
 										 rep("blue", blue),
 										 rep("red", red))
@@ -32,7 +32,7 @@ main <- function(){
 	columns = slotIds %% width +1
 	rows = (slotIds-1) %/% width +1
 	
-	colors = c(rep("black", assasin),
+	colors = c(rep("black", assassin),
 						 rep("tan", ib),
 						 rep("blue", blue),
 						 rep("red", red))
@@ -77,7 +77,7 @@ processOptions <- function(opt){
 	# Take arguments from the command line
 	#args <- commandArgs(trailingOnly = T)
 	option_list = list(
-		h=make_option(opt_str=c("-H", "--hieght"), type="integer", default=NULL, 
+		h=make_option(opt_str=c("-H", "--height"), type="integer", default=NULL, 
 									help="number of rows in grid"),
 		w=make_option(opt_str=c("-W", "--width"), type="integer", default=NULL, 
 									help="number of columns in grid"),
@@ -108,22 +108,22 @@ processOptions <- function(opt){
 		set.seed(opt$ss)
 	}
 	
-	# if both hieght and width are null, set both to 5.
+	# if both height and width are null, set both to 5.
 	# if only one is NULL, set it to match the other.
-	if (is.null(opt$hieght) & is.null(opt$width)){
-		opt$hieght=5
+	if (is.null(opt$height) & is.null(opt$width)){
+		opt$height=5
 		opt$width=5
 	} else {
-		if (is.null(opt$hieght)) {
-			opt$hieght = opt$width
+		if (is.null(opt$height)) {
+			opt$height = opt$width
 		}
 		if (is.null(opt$width)) {
-			opt$width = opt$hieght
+			opt$width = opt$height
 		}
 	}
 	
 	# Calculate total squares
-	ts = opt$width * opt$hieght
+	ts = opt$width * opt$height
 	
 	# Notice that the order of handling cases matters
 	# first - if both blue and red are specified
@@ -136,8 +136,8 @@ processOptions <- function(opt){
 	
 	# if neither -r nor -b is null
 	if (!is.null(opt$blue) & !is.null(opt$red)){
-		# calculate open squares, total - assassins - red - blue
-		openSq = ts - opt$assasin - opt$blue - opt$red
+		# calculate open squares, total - assassin - red - blue
+		openSq = ts - opt$assassin - opt$blue - opt$red
 		if (openSq < 0) {
 			stop("Not enough squares in the grid.\n")
 		}
@@ -162,7 +162,7 @@ processOptions <- function(opt){
 			opt$ib = floor(ts * .25)
 		}
 		# Calculate open squares
-		openSq = ts - opt$assasin - opt$ib
+		openSq = ts - opt$assassin - opt$ib
 		#if open squares < 3 then print error message
 		if (openSq < 3){
 			stop("Not enough squares in the grid.\n")

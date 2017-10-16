@@ -11,6 +11,7 @@ import numpy as np
 from matplotlib.patches import Rectangle
 from matplotlib.collections import PatchCollection
 import matplotlib.pyplot as plt
+from PIL import Image
 
 
 def retrieve_args():
@@ -185,7 +186,10 @@ def main():
 	ax.set_xlim(left=0, right=(border+args.width-gap+border))
 	ax.set_ylim(bottom=0, top=(border+args.hieght-gap+border))
 
-	plt.show()
+	plt.savefig(args.outfile)
+	img = Image.open(args.outfile)
+	img.show()
+	#plt.show()
 
 
 	print "total squares in grid: %d" % ts

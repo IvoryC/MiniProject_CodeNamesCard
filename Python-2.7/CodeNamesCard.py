@@ -175,13 +175,15 @@ def main():
 
 	patches = []
 	for i in range(ts):
-		space = Rectangle([columns[i], rows[i]], width=(1 - gap), height=(1 - gap), color=colors_dict[i])
+		space = Rectangle([columns[i], rows[i]], width=(1 - gap), height=(1 - gap)) # colors_dict.values()
 		patches.append(space)
 
 	fig, ax = plt.subplots()
 
-	pc = PatchCollection(patches)
+	pc = PatchCollection(patches, color=colors_dict.values())
 	ax.add_collection(pc)
+	ax.set_xlim(left=0, right=(border+args.width-gap+border))
+	ax.set_ylim(bottom=0, top=(border+args.hieght-gap+border))
 
 	plt.show()
 

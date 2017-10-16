@@ -7,6 +7,7 @@ Code Names Card
 
 import argparse
 import random
+import numpy as np
 
 
 def retrieve_args():
@@ -154,10 +155,19 @@ def main():
 		# later use random.sample(population, k) to sample without replacement
 
 	args, ts = process_grid_size(args)
-
 	args, first = process_square_types(args, ts)
 
+	slotIds = np.array(random.sample(range(ts), ts))
+	columns = sI_array % args.width
+	rows = sI_array // args.width
 
+	square_type = ["assassin"] * args.assassin + ["ib"] * args.ib + ["blue"] * args.blue + ["red"] * args.red
+	types_dict = {slotIds[i]:square_type[i] for i in range(ts)}
+
+	colors = ["black"] * args.assassin + ["tan"] * args.ib + ["blue"] * args.blue + ["red"] * args.red
+	colors_dict = {slotIds[i]:colors[i] for i in range(ts)}
+
+	
 
 
 	print "total squares in grid: %d" % ts

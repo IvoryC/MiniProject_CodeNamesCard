@@ -1,3 +1,5 @@
 *.RData
 *SpyMap*
 *README.html
+*.Rhistory
+*.Rapp.history

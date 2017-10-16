@@ -18,6 +18,7 @@ main <- function(){
 	for (i in 1:length(opt)){
 		print(paste0(names(opt)[i],": ", opt[[i]]))
 	}
+	# TODO add printed statement indicating who should go first
 	
 	attach(opt) # so we don't have to write opt$ every time
 	
@@ -80,9 +81,9 @@ processOptions <- function(opt){
 									help="number of rows in grid"),
 		w=make_option(opt_str=c("-W", "--width"), type="integer", default=NULL, 
 									help="number of columns in grid"),
-		a=make_option(opt_str=c("-a", "--assasin"), type="integer", 
+		a=make_option(opt_str=c("-a", "--assassin"), type="integer", 
 									default=1, 
-									help="number of assisins"),
+									help="number of assissins"),
 		i=make_option(opt_str=c("-i", "--inocents"), type="integer", default=NULL, 
 									help="number of innocent by-stander squares", dest="ib"),
 		r=make_option(opt_str=c("-r", "--red"), type="integer", default=NULL, 
@@ -93,7 +94,7 @@ processOptions <- function(opt){
 									default="SpyMap.png", 
 									help="file name to save image"),
 		s=make_option(opt_str=c("-s", "--set-seed"), type="integer", default=NULL, 
-									help="file name to save image", dest="ss")
+									help="set random seed to regenerate an identical card", dest="ss")
 	); 
 	opt_parser = OptionParser(option_list=option_list)
 	opt = parse_args(opt_parser)
@@ -130,12 +131,12 @@ processOptions <- function(opt){
 	#     (if they were specified, this is correctly skipped)
 	# last - if either one is null 
 	#     (which must be exactly one, since both values would have 
-	#     been set by not if both or neither  had been specified.)
-	#     (where we can assume that the other is NOT null)
+	#     been set by now if both or neither had been specified.)
+	#     so we can assume that the other is NOT null
 	
 	# if neither -r nor -b is null
 	if (!is.null(opt$blue) & !is.null(opt$red)){
-		# calculate open squares, total - assasins - red - blue
+		# calculate open squares, total - assassins - red - blue
 		openSq = ts - opt$assasin - opt$blue - opt$red
 		if (openSq < 0) {
 			stop("Not enough squares in the grid.\n")
@@ -204,7 +205,7 @@ processOptions <- function(opt){
 			opt$red = opt$blue - 1
 		}
 		# Calculate open squares
-		openSq = ts - opt$assasin - opt$red - opt$blue
+		openSq = ts - opt$assassin - opt$red - opt$blue
 		#if <0, error message
 		if (openSq < 0) {
 			stop("Not enough squares in the grid.\n")

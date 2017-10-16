@@ -12,20 +12,21 @@ from matplotlib.patches import Rectangle
 from matplotlib.collections import PatchCollection
 import matplotlib.pyplot as plt
 from PIL import Image
+import sys
 
 
 def retrieve_args():
 
 	parser = argparse.ArgumentParser(description='Create a spy map card like the one used for the Code Names board game.')
-	# hieght
-	parser.add_argument("-H", "--hieght", metavar='H', type=int, default=None, nargs='?',
+	# height
+	parser.add_argument("-H", "--height", metavar='H', type=int, default=None, nargs='?',
 	                    help='number of rows in the grid (default 5 or equal to width)')
 	# width
 	parser.add_argument('-W', "--width", metavar='W', type=int, default=None, nargs='?',
-	                    help='number of columns in the grid (default 5 or equal to hieght)')
+	                    help='number of columns in the grid (default 5 or equal to height)')
 	# assassin
 	parser.add_argument('-a', "--assassin", metavar='a', type=int, default=1, nargs='?',
-	                    help='number of assisins')
+	                    help='number of assissins')
 	# inocent bystanders
 	parser.add_argument('-i', "--incents", metavar='i', type=int, default=None, nargs='?',
 	                    help='number of innocent by-stander squares', dest="ib")
@@ -49,17 +50,17 @@ def retrieve_args():
 
 
 def process_grid_size(args):
-	# if both hieght and width are null, set both to 5.
+	# if both height and width are null, set both to 5.
 	# if only one is NULL, set it to match the other.
-	if args.hieght is None and args.width is None:
-		args.hieght = 5
+	if args.height is None and args.width is None:
+		args.height = 5
 		args.width = 5
-	elif args.hieght is None:
-		args.hieght = args.width
+	elif args.height is None:
+		args.height = args.width
 	elif args.width is None:
-		args.width = args.hieght
+		args.width = args.height
 
-	ts = args.width * args.hieght
+	ts = args.width * args.height
 	return args, ts
 
 
@@ -184,7 +185,7 @@ def main():
 	pc = PatchCollection(patches, color=colors_dict.values())
 	ax.add_collection(pc)
 	ax.set_xlim(left=0, right=(border+args.width-gap+border))
-	ax.set_ylim(bottom=0, top=(border+args.hieght-gap+border))
+	ax.set_ylim(bottom=0, top=(border+args.height-gap+border))
 
 	plt.savefig(args.outfile)
 	img = Image.open(args.outfile)

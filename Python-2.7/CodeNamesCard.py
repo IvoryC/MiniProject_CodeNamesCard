@@ -162,8 +162,8 @@ def main():
 	args, ts = process_grid_size(args)
 	args, first = process_square_types(args, ts)
 
-	gap = .2
-	border = .1
+	gap = .1
+	border = .2
 
 	slotIds = np.array(random.sample(range(ts), ts))
 	columns = slotIds % args.width + border
@@ -180,7 +180,11 @@ def main():
 		space = Rectangle([columns[i], rows[i]], width=(1 - gap), height=(1 - gap)) # colors_dict.values()
 		patches.append(space)
 
+	#plt.ion() #for dev and testing
 	fig, ax = plt.subplots()
+	
+	# I the plot itself to make up the entire image, no surrounding white space.
+	fig.subplots_adjust(left=0, bottom=0, right=1, top=1)
 
 	pc = PatchCollection(patches, color=colors_dict.values())
 	ax.add_collection(pc)

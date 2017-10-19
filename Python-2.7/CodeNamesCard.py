@@ -163,7 +163,7 @@ def main():
 	args, first = process_square_types(args, ts)
 
 	gap = .1
-	border = .2
+	border = .3
 
 	slotIds = np.array(random.sample(range(ts), ts))
 	columns = slotIds % args.width + border
@@ -175,21 +175,52 @@ def main():
 	colors = ["black"] * args.assassin + ["tan"] * args.ib + ["blue"] * args.blue + ["red"] * args.red
 	colors_dict = {slotIds[i]:colors[i] for i in range(ts)}
 
+	plot_width = border+args.width-gap+border
+	plot_height = border+args.height-gap+border
+
 	patches = []
 	for i in range(ts):
 		space = Rectangle([columns[i], rows[i]], width=(1 - gap), height=(1 - gap)) # colors_dict.values()
 		patches.append(space)
+	pc = PatchCollection(patches, color=colors_dict.values())
+
+	#### Define a line to border the image, and colored rectangles 
+	# to indicate which team goes first.
+	# Notice that the size of this box is equal to the diminsions of 
+	# the whole plot, minus half the border on each side.
+	outer_patches = []
+	outline = Rectangle([border / 2.0, border / 2.0], width=args.width-gap+border, height=args.height-gap+border, fc='none', ec='#000000')
+	outer_patches.append(outline)
+	shortSide = .2
+	longSide = .6
+	outer_widths = [shortSide, longSide, shortSide, longSide] #left, top, right, bottom
+	outer_heights = [longSide, shortSide, longSide, shortSide]
+	# set the x values for the lower LEFT corner for the rectangles on the border
+	outer_x = [(border / 2.0 - shortSide / 2.0), + #left
+	(plot_width - longSide)/2.0, + #top
+	plot_width - border / 2.0 - shortSide / 2.0, + # right
+	(plot_width - longSide)/2.0] # bottom
+	# set the y values for the LOWER left corner for the rectangles on the border
+	outer_y = [(plot_height - longSide)/2.0, + #left
+	plot_height - border / 2.0 - shortSide / 2.0, + #top
+	(plot_height - longSide)/2.0, + # right
+	border / 2.0 - shortSide / 2.0] # bottom
+
+	for i in range(4):
+		space = Rectangle([outer_x[i], outer_y[i]], width=outer_widths[i], height=outer_heights[i], fc=first, ec='#000000')
+		outer_patches.append(space)
+	outer_pc = PatchCollection(outer_patches, match_original=True)
 
 	#plt.ion() #for dev and testing
 	fig, ax = plt.subplots()
-	
+
 	# I the plot itself to make up the entire image, no surrounding white space.
 	fig.subplots_adjust(left=0, bottom=0, right=1, top=1)
-
-	pc = PatchCollection(patches, color=colors_dict.values())
+	
 	ax.add_collection(pc)
-	ax.set_xlim(left=0, right=(border+args.width-gap+border))
-	ax.set_ylim(bottom=0, top=(border+args.height-gap+border))
+	ax.add_collection(outer_pc)
+	ax.set_xlim(left=0, right=plot_width)
+	ax.set_ylim(bottom=0, top=plot_height)
 
 	plt.savefig(args.outfile)
 	img = Image.open(args.outfile)

@@ -203,10 +203,10 @@ assembleCard <- function(opt){
   columns = slotIds %% width +1
   rows = (slotIds-1) %/% width +1
   
-  colors = c(rep("black", assassin),
-             rep("tan", ib),
-             rep("blue", blue),
-             rep("red", red))
+  colors = c(rep("#5B5852", assassin), #dark gray
+             rep("#EFEEC7", ib), # tan
+             rep("#017ED7", blue), # blue
+             rep("#FE5148", red)) # red
   
   pchs = c(rep(4, assassin), # X
            rep(NA, ib), # no symbol
@@ -222,7 +222,10 @@ assembleCard <- function(opt){
   return(cardTemplate)
 }
 
-drawCard <- function(cardTemplate){
+drawCard <- function(cardTemplate,  
+                     bg.inner = "#211F1F",
+                     bg.mid = "#836E66",
+                     bg.outer = "#9A8984"){
   attach(cardTemplate)
   attach(opt)
   

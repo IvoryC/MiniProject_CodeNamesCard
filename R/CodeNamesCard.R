@@ -191,7 +191,7 @@ processOptions <- function(opt){ # function(opt){
 
 
 assembleCard <- function(opt){
-  attach(opt) # so we don't have to write opt$ every time
+  suppressMessages(attach(opt)) # so we don't have to write opt$ every time
   
   ### Assign squares in grid
   slotIds = sample(x=1:ts, size=ts, replace=F)
@@ -226,8 +226,8 @@ drawCard <- function(cardTemplate,
                      bg.inner = "#211F1F",
                      bg.mid = "#836E66",
                      bg.outer = "#9A8984"){
-  attach(cardTemplate)
-  attach(opt)
+  suppressMessages(attach(cardTemplate))
+  suppressMessages(attach(opt))
   
   ### Make image
   # plot Grid

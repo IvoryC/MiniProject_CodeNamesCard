@@ -12,9 +12,16 @@ The user should be able to control:
 
 Given these parameters, the application should produce an image similar to the maps found in the Code Names game.
 
-The output should look as close as possible to the cards in the official game.
-For online reference, there is an app version of the official game: 
-https://play.google.com/store/apps/details?id=com.czechgames.codenames
+The output should look as close as possible to the cards in the official game:
+
+![photo of game card  - photo credit: [Cardboard Quest](https://boardgamegeek.com/user/CardboardQuest)](CodeNamesCardRefImage.jpeg)
+
+
+
+Go to [boardgamegeek.com](https://boardgamegeek.com/thread/1464156/codenames-review-ocean3-no-wait-dont-say-shark-don) for more descriptoin of the original board game.
+
+There is also an official app version on the [app store](https://play.google.com/store/apps/details?id=com.czechgames.codenames).
+
 
 
 ## Implementations:

@@ -355,8 +355,9 @@ drawCard <- function(cardTemplate,
               default.units="in", vp=vp)
   # draw border
   # # indicate which team goes first by adding colored rectangles at the border
-  locX=c(xMax*.1, xMid, xMax*.9, xMid) #left, top, right, bottom
-  locY=c(yMid, yMax*.9, yMid, yMax*.1) #left, top, right, bottom
+  locX=c(xMax*.085, xMid, xMax*.915, xMid) #left, top, right, bottom
+  locY=c(yMid, yMax*.915, yMid, yMax*.085) #left, top, right, bottom
+  # TODO - do something more systematic than this ad-hoc trial and error way of setting values .915 and .085
   #short=.2 #moved up to top of border plotting
   long=.5
   # because the added traits in the order: assassin, ib, blue, red

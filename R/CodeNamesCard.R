@@ -303,15 +303,44 @@ drawCard <- function(cardTemplate,
               default.units="in", vp=vp)
   # draw border
   # # indicate which team goes first by adding colored rectangles at the border
-  # locX=c(xMin, xMid, xMax, xMid) #left, top, right, bottom
-  # locY=c(yMid, yMax, yMid, yMin) #left, top, right, bottom
-  # short=.2
-  # long=.5
-  # # symbols(x=locX, y=locY, xpd=T, add=T, inches=T, bg=c(first),
-  # #         rectangles=matrix(nrow=4, ncol=2, 
-  # #                           data=cbind(c(short, long, short, long), 
-  # #                                      c(long, short, long, short)))
-  # # )
+  locX=c(xMax*.1, xMid, xMax*.9, xMid) #left, top, right, bottom
+  locY=c(yMid, yMax*.9, yMid, yMax*.1) #left, top, right, bottom
+  short=.2
+  long=.5
+  # because the added traits in the order: assassin, ib, blue, red
+  # we know that the last item in the color vector is red, and the (assassin+ib+1)th is blue.
+  firstCol = ifelse(first=="blue", colors[assassin+ib+1], colors[ts])
+  bord.w=c(short, long, short, long)
+  bord.h=c(long, short, long, short)
+  grid.rect(x=locX, y=locY,
+            width=unit(bord.w,"in"), 
+            height=unit(bord.h, "in"),
+            default.units="in", just="centre",
+            gp=gpar(fill=firstCol, col="black", lwd=1), vp=vp)
+  # To get the glow effect, layer on some white (so the transparent will show), 
+  # then the transparaent version of the color, then white again for a bright little core
+  for (i in 1:4){ # round rect only does one at a time, so we have to use a loop.
+    # first white layer
+    f=.4 # scaling factor relative to the sizes above for the entire rectangle
+    grid.roundrect(x=locX[i], y=locY[i], r=unit(0.05, "in"),
+                   width=unit(bord.w*f,"in")[i],
+                   height=unit(bord.h*f, "in")[i],
+                   default.units="in", just="centre",
+                   gp=gpar(fill="white", col=NA, lwd=1), vp=vp)
+    # light color layer
+    grid.roundrect(x=locX[i], y=locY[i], r=unit(0.05, "in"),
+                   width=unit(bord.w*f,"in")[i],
+                   height=unit(bord.h*f, "in")[i],
+                   default.units="in", just="centre",
+                   gp=gpar(fill=makeTransparent(firstCol,.7), col=NA, lwd=1), vp=vp)
+    # final white layer
+    f=.2
+    grid.roundrect(x=locX[i], y=locY[i], r=unit(0.05, "in"),
+                   width=unit(bord.w*f,"in")[i],
+                   height=unit(bord.h*f, "in")[i],
+                   default.units="in", just="centre",
+                   gp=gpar(fill="white", col=NA, lwd=1), vp=vp)
+  }
   dev.off()
   
 }

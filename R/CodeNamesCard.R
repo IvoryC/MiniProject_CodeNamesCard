@@ -209,6 +209,11 @@ assembleCard <- function(opt){
              rep("#017ED7", blue), # blue
              rep("#FE5148", red)) # red
   
+  innerCol = rep(NA, ts)
+  for (i in 1:ts){
+    innerCol[i] = makeTransparent(colors[i], .7)
+  }
+  
   pchs = c(rep(4, assassin), # X
            rep(NA, ib), # no symbol
            rep(21, blue), # circle
@@ -220,8 +225,16 @@ assembleCard <- function(opt){
                       columns=columns,
                       rows=rows,
                       colors=colors,
+                      innerCol=innerCol,
                       pchs=pchs)
   return(cardTemplate)
+}
+
+makeTransparent <- function(color, alpha=.5){
+  matrix = t(col2rgb(color, alpha=T))
+  matrix = matrix/255
+  matrix[,"alpha"] = alpha
+  return(rgb(red=matrix[,"red"], green=matrix[,"green"], blue=matrix[,"blue"], alpha=matrix[,"alpha"]))
 }
 
 drawCard <- function(cardTemplate,  
@@ -239,6 +252,7 @@ drawCard <- function(cardTemplate,
   png(filename=opt$outfile)
   par(mar=rep(0,4))
   
+  
   bspc=.5 #bspc for border space
   xMin=0
   xMax=width+1+2*bspc
@@ -246,13 +260,41 @@ drawCard <- function(cardTemplate,
   yMin=0
   yMax=height+1+2*bspc
   yMid=mean(c(yMin, yMax))
+  short=.2 # the short dimension of the little boxes on the border
+  long=.5 
   
+  plotProperties = list(
+    bspc=bspc, 
+    xMin=xMin,  xMax=xMax, xMid=xMid,
+    yMin=yMin,  yMax=yMax, yMid=yMid,
+    short=short, long=long, 
+    bg.inner=bg.inner, bg.mid=bg.mid, bg.outer=bg.outer
+  )
+
   # create blank plot
   grid.newpage()
-  #plot(rows,columns, xlim=c(xMin,xMax), ylim=c(yMin,yMax),xaxt="n", yaxt="n", type="n")
   vp=viewport(x = unit(-.18, "in"), y = unit(-.18, "in"),
               width = unit(xMax, "in"), height = unit(yMax, "in"),
               default.units = "in", just = c(0,0))
+  
+  # draw the stylized backround and borders
+  drawSpyBackground(plotProperties,vp)
+  
+  # draw grid squares
+  drawGridSquares(cardTemplate, vp)
+
+  ## Add the symbols inside each box
+  drawSymbols(cardTemplate, vp=vp)
+  
+  # draw border boxes indicating which team goes first by adding colored rectangles at the border
+  drawBorderBoxes(plotProperties, vp=vp)
+
+  dev.off()
+  
+}
+
+drawSpyBackground <- function(plotProperties, vp){
+  suppressMessages(attach(plotProperties))
   outer.sizeX = xMax*.94
   outer.sizeY = yMax*.94
   grid.roundrect(x=xMid, y=yMid, width=outer.sizeX, height=outer.sizeY, 
@@ -270,7 +312,6 @@ drawCard <- function(cardTemplate,
                  r=unit(0.15, "in"),
                  gp=gpar(fill=bg.inner, col=NA), vp=vp)
   fromEdgeSmall = (outer.sizeX - mid.sizeX)/2 # distance from the middle border layer to the outer edge (xMax, yMax)
-  short=.2 # the short dimension of the little boxes on the border
   fromEdgeBig = fromEdgeSmall + short # try to keep this under the distance from the inner layer to the edge
   gp.outer=gpar(fill=bg.outer, col=bg.outer, lwd=2.2)
   # right side
@@ -281,9 +322,9 @@ drawCard <- function(cardTemplate,
                gp=gp.outer, 
                default.units="in", vp=vp)
   grid.lines(x=rightX, 
-               y=rightY,
-               gp=gpar(col="black", lwd=1), 
-               default.units="in", vp=vp)
+             y=rightY,
+             gp=gpar(col="black", lwd=1), 
+             default.units="in", vp=vp)
   # left side
   leftX = xMid-(mid.sizeX/2) + c(0, short, short, 0) 
   #leftY = c(bspc+1, bspc+1+short, yMax-(bspc+1+short), yMax-(bspc+1)) # Y values are the same as the other side.
@@ -317,22 +358,21 @@ drawCard <- function(cardTemplate,
              y=botY,
              gp=gpar(col="black", lwd=1), 
              default.units="in", vp=vp)
-  
+}
+
+drawGridSquares <- function(cardTemplate, vp){
   # draw grid squares
-  # symbols(x=columns+bspc, y=rows+bspc,
-  #         xlim=c(xMin,xMax), ylim=c(yMin,yMax),
-  #         squares=rep(.9,ts), inches=T, bg=colors,
-  #         xaxt="n", yaxt="n")
-  innerCol = rep(NA, ts)
   for (i in 1:ts){
     grid.roundrect(x=columns[i]+bspc, 
                    y=rows[i]+bspc, 
                    width=.95, height=.95,
                    gp=gpar(fill=colors[i], col=NA),
                    default.units="in", just="centre", vp=vp)
-    innerCol[i] = makeTransparent(colors[i], .7)
   }
-  
+}
+
+drawSymbols <- function(cardTemplate, vp){
+  suppressMessages(attach(cardTemplate))
   ## Add the symbols inside each box
   # add white glow layer
   grid.points(x=columns+bspc, y=rows+bspc, size=unit(3.8, "char"),
@@ -353,13 +393,16 @@ drawCard <- function(cardTemplate,
   grid.points(x=columns[asns]+bspc, y=rows[asns]+bspc, size=unit(3.7, "char"),
               pch=pchs[asns], gp=gpar(fill=colors, col="black", lwd=5),
               default.units="in", vp=vp)
-  # draw border
-  # # indicate which team goes first by adding colored rectangles at the border
+}
+
+drawBorderBoxes <- function(plotProperties, vp){
+  # draw border boxes indicating which team goes first by adding colored rectangles at the border
+  suppressMessages(attach(plotProperties))
   locX=c(xMax*.085, xMid, xMax*.915, xMid) #left, top, right, bottom
   locY=c(yMid, yMax*.915, yMid, yMax*.085) #left, top, right, bottom
   # TODO - do something more systematic than this ad-hoc trial and error way of setting values .915 and .085
   #short=.2 #moved up to top of border plotting
-  long=.5
+  #long=.5
   # because the added traits in the order: assassin, ib, blue, red
   # we know that the last item in the color vector is red, and the (assassin+ib+1)th is blue.
   firstCol = ifelse(first=="blue", colors[assassin+ib+1], colors[ts])
@@ -394,15 +437,6 @@ drawCard <- function(cardTemplate,
                    default.units="in", just="centre",
                    gp=gpar(fill="white", col=NA, lwd=1), vp=vp)
   }
-  dev.off()
-  
-}
-
-makeTransparent <- function(color, alpha=.5){
-  matrix = t(col2rgb(color, alpha=T))
-  matrix = matrix/255
-  matrix[,"alpha"] = alpha
-  return(rgb(red=matrix[,"red"], green=matrix[,"green"], blue=matrix[,"blue"], alpha=matrix[,"alpha"]))
 }
 
 

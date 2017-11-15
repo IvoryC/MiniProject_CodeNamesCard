@@ -3,6 +3,7 @@
 # CodeNamesCard
 
 library("optparse")
+library("grid")
 
 main <- function(){
 	
@@ -210,7 +211,7 @@ assembleCard <- function(opt){
   
   pchs = c(rep(4, assassin), # X
            rep(NA, ib), # no symbol
-           rep(1, blue), # circle
+           rep(21, blue), # circle
            rep(23, red)) # diamond
   
   cardTemplate = list(opt=opt,
@@ -218,7 +219,8 @@ assembleCard <- function(opt){
                       groups=groups,
                       columns=columns,
                       rows=rows,
-                      colors=colors)
+                      colors=colors,
+                      pchs=pchs)
   return(cardTemplate)
 }
 
@@ -235,29 +237,90 @@ drawCard <- function(cardTemplate,
   # and a .2 cm gap between each row and each column, 
   # and that there is a 1 cm border outside of the grid itself.
   png(filename=opt$outfile)
-  par(mar=rep(1,4))
-  symbols(x=columns, y=rows, squares=rep(.9,ts), inches=F, bg=colors,
-          xaxt="n", yaxt="n")
+  par(mar=rep(0,4))
   
-  # indicate which team goes first by adding colored rectangles at the border
-  xMin=par("usr")[1]
-  xMax=par("usr")[2]
+  bspc=.5 #bspc for border space
+  xMin=0
+  xMax=width+1+2*bspc
   xMid=mean(c(xMin, xMax))
-  locX=c(xMin, xMid, xMax, xMid) #left, top, right, bottom
-  yMin=par("usr")[3]
-  yMax=par("usr")[4]
+  yMin=0
+  yMax=height+1+2*bspc
   yMid=mean(c(yMin, yMax))
-  locY=c(yMid, yMax, yMid, yMin) #left, top, right, bottom
-  short=.2
-  long=.5
-  symbols(x=locX, y=locY, xpd=T, add=T, inches=F, bg=c(first),
-          rectangles=matrix(nrow=4, ncol=2, 
-                            data=cbind(c(short, long, short, long), 
-                                       c(long, short, long, short)))
-  )
   
+  # create blank plot
+  grid.newpage()
+  #plot(rows,columns, xlim=c(xMin,xMax), ylim=c(yMin,yMax),xaxt="n", yaxt="n", type="n")
+  vp=viewport(x = unit(-.18, "in"), y = unit(-.18, "in"),
+              width = unit(xMax, "in"), height = unit(yMax, "in"),
+              default.units = "in", just = c(0,0))
+  grid.roundrect(x=xMid, y=yMid, width=xMax*.94, height=yMax*.94, 
+                 default.units="in",just="centre", 
+                 r=unit(0.4, "in"),
+                 gp=gpar(fill=bg.outer, col=NA), vp=vp)
+  grid.roundrect(x=xMid, y=yMid, width=xMax*.85, height=yMax*.85, 
+                 default.units="in",just="centre", 
+                 r=unit(0.3, "in"),
+                 gp=gpar(fill=bg.mid, col=NA), vp=vp)
+  grid.roundrect(x=xMid, y=yMid, width=xMax*.77, height=yMax*.77, 
+                 default.units="in",just="centre", 
+                 r=unit(0.15, "in"),
+                 gp=gpar(fill=bg.inner, col=NA), vp=vp)
+  #polygon()
+  # draw grid squares
+  # symbols(x=columns+bspc, y=rows+bspc,
+  #         xlim=c(xMin,xMax), ylim=c(yMin,yMax),
+  #         squares=rep(.9,ts), inches=T, bg=colors,
+  #         xaxt="n", yaxt="n")
+  innerCol = rep(NA, ts)
+  for (i in 1:ts){
+    grid.roundrect(x=columns[i]+bspc, 
+                   y=rows[i]+bspc, 
+                   width=.95, height=.95,
+                   gp=gpar(fill=colors[i], col=NA),
+                   default.units="in", just="centre", vp=vp)
+    innerCol[i] = makeTransparent(colors[i], .7)
+  }
+  
+  ## Add the symbols inside each box
+  # add white glow layer
+  grid.points(x=columns+bspc, y=rows+bspc, size=unit(3.8, "char"),
+              pch=pchs, gp=gpar(fill="white", col="white", lwd=11),
+              default.units="in", vp=vp)
+  grid.points(x=columns+bspc, y=rows+bspc, size=unit(3.8, "char"),
+              pch=pchs, gp=gpar(fill=NA, col=innerCol, lwd=11),
+              default.units="in", vp=vp)
+  grid.points(x=columns+bspc, y=rows+bspc, size=unit(3.8, "char"),
+              pch=pchs, gp=gpar(fill=NA, col="white", lwd=2), 
+              default.units="in", vp=vp)
+  # add black outline and inner fill
+  grid.points(x=columns+bspc, y=rows+bspc, size=unit(3.7, "char"),
+              pch=pchs, gp=gpar(fill=colors, col="black", lwd=.6),
+              default.units="in", vp=vp)
+  # the assassin X needs some extra help. Recall that assassin is the first group
+  asns = 1:assassin
+  grid.points(x=columns[asns]+bspc, y=rows[asns]+bspc, size=unit(3.7, "char"),
+              pch=pchs[asns], gp=gpar(fill=colors, col="black", lwd=5),
+              default.units="in", vp=vp)
+  # draw border
+  # # indicate which team goes first by adding colored rectangles at the border
+  # locX=c(xMin, xMid, xMax, xMid) #left, top, right, bottom
+  # locY=c(yMid, yMax, yMid, yMin) #left, top, right, bottom
+  # short=.2
+  # long=.5
+  # # symbols(x=locX, y=locY, xpd=T, add=T, inches=T, bg=c(first),
+  # #         rectangles=matrix(nrow=4, ncol=2, 
+  # #                           data=cbind(c(short, long, short, long), 
+  # #                                      c(long, short, long, short)))
+  # # )
   dev.off()
   
+}
+
+makeTransparent <- function(color, alpha=.5){
+  matrix = t(col2rgb(color, alpha=T))
+  matrix = matrix/255
+  matrix[,"alpha"] = alpha
+  return(rgb(red=matrix[,"red"], green=matrix[,"green"], blue=matrix[,"blue"], alpha=matrix[,"alpha"]))
 }
 
 

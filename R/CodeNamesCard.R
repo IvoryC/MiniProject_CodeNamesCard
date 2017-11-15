@@ -253,19 +253,71 @@ drawCard <- function(cardTemplate,
   vp=viewport(x = unit(-.18, "in"), y = unit(-.18, "in"),
               width = unit(xMax, "in"), height = unit(yMax, "in"),
               default.units = "in", just = c(0,0))
-  grid.roundrect(x=xMid, y=yMid, width=xMax*.94, height=yMax*.94, 
+  outer.sizeX = xMax*.94
+  outer.sizeY = yMax*.94
+  grid.roundrect(x=xMid, y=yMid, width=outer.sizeX, height=outer.sizeY, 
                  default.units="in",just="centre", 
                  r=unit(0.4, "in"),
                  gp=gpar(fill=bg.outer, col=NA), vp=vp)
-  grid.roundrect(x=xMid, y=yMid, width=xMax*.85, height=yMax*.85, 
+  mid.sizeX = xMax*.85
+  mid.sizeY = yMax*.85
+  grid.roundrect(x=xMid, y=yMid, width=mid.sizeX, height=mid.sizeY, 
                  default.units="in",just="centre", 
                  r=unit(0.3, "in"),
-                 gp=gpar(fill=bg.mid, col=NA), vp=vp)
+                 gp=gpar(fill=bg.mid, col="black"), vp=vp)
   grid.roundrect(x=xMid, y=yMid, width=xMax*.77, height=yMax*.77, 
                  default.units="in",just="centre", 
                  r=unit(0.15, "in"),
                  gp=gpar(fill=bg.inner, col=NA), vp=vp)
-  #polygon()
+  fromEdgeSmall = (outer.sizeX - mid.sizeX)/2 # distance from the middle border layer to the outer edge (xMax, yMax)
+  short=.2 # the short dimension of the little boxes on the border
+  fromEdgeBig = fromEdgeSmall + short # try to keep this under the distance from the inner layer to the edge
+  gp.outer=gpar(fill=bg.outer, col=bg.outer, lwd=2.2)
+  # right side
+  rightX = xMid+(mid.sizeX/2) + c(0,-short, -short, 0) #c(xMid+(mid.sizeX/2), xMid+(mid.sizeX/2)-short, xMid+(mid.sizeX/2)-short, xMid+(mid.sizeX/2))
+  rightY = c(bspc+1, bspc+1+short, yMax-(bspc+1+short), yMax-(bspc+1))
+  grid.polygon(x=rightX, 
+               y=rightY,
+               gp=gp.outer, 
+               default.units="in", vp=vp)
+  grid.lines(x=rightX, 
+               y=rightY,
+               gp=gpar(col="black", lwd=1), 
+               default.units="in", vp=vp)
+  # left side
+  leftX = xMid-(mid.sizeX/2) + c(0, short, short, 0) 
+  #leftY = c(bspc+1, bspc+1+short, yMax-(bspc+1+short), yMax-(bspc+1)) # Y values are the same as the other side.
+  grid.polygon(x=leftX, 
+               y=rightY,
+               gp=gp.outer, 
+               default.units="in", vp=vp)
+  grid.lines(x=leftX, 
+             y=rightY,
+             gp=gpar(col="black", lwd=1), 
+             default.units="in", vp=vp)
+  # top side
+  topX = c(bspc+1, bspc+1+short, xMax-(bspc+1+short), xMax-(bspc+1))
+  topY = yMid+(mid.sizeY/2) + c(0,-short, -short, 0)
+  grid.polygon(x=topX, 
+               y=topY,
+               gp=gp.outer, 
+               default.units="in", vp=vp)
+  grid.lines(x=topX, 
+             y=topY,
+             gp=gpar(col="black", lwd=1), 
+             default.units="in", vp=vp)
+  # bottom side
+  # botX = same as topX
+  botY = yMid-(mid.sizeY/2) + c(0, short, short, 0)
+  grid.polygon(x=topX, 
+               y=botY,
+               gp=gp.outer, 
+               default.units="in", vp=vp)
+  grid.lines(x=topX, 
+             y=botY,
+             gp=gpar(col="black", lwd=1), 
+             default.units="in", vp=vp)
+  
   # draw grid squares
   # symbols(x=columns+bspc, y=rows+bspc,
   #         xlim=c(xMin,xMax), ylim=c(yMin,yMax),
@@ -305,7 +357,7 @@ drawCard <- function(cardTemplate,
   # # indicate which team goes first by adding colored rectangles at the border
   locX=c(xMax*.1, xMid, xMax*.9, xMid) #left, top, right, bottom
   locY=c(yMid, yMax*.9, yMid, yMax*.1) #left, top, right, bottom
-  short=.2
+  #short=.2 #moved up to top of border plotting
   long=.5
   # because the added traits in the order: assassin, ib, blue, red
   # we know that the last item in the color vector is red, and the (assassin+ib+1)th is blue.

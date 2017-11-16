@@ -47,11 +47,11 @@ ui <- fluidPage(
          						min = 2,
          						max = 20,
          						value = defaultArgs$blue), #TODO make this a random selection based on output
-         sliderInput("ib",
-         						"innocent by-standers:",
-         						min = 0,
-         						max = 25, #output$ts,
-         						value = defaultArgs$ib),
+         # sliderInput("ib",
+         # 						"innocent by-standers:",
+         # 						min = 0,
+         # 						max = 25, #output$ts,
+         # 						value = defaultArgs$ib),
          textInput("ss", "set seed", value = NA, placeholder = "enter an integer"),
       	submitButton("New Card")
       ),

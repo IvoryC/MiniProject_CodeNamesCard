@@ -181,26 +181,23 @@ makeTransparent <- function(color, alpha=.5){
 	return(rgb(red=matrix[,"red"], green=matrix[,"green"], blue=matrix[,"blue"], alpha=matrix[,"alpha"]))
 }
 
-drawAndSaveCard <- function(fname, ...){
-	png(filename=fname)
-	drawCard(...)
+drawAndSaveCard <- function(fname, cardTemplate){
+	
+	plotProperties = setImageDims(cardTemplate)
+	
+	png(filename=fname, 
+			width = plotProperties$xMax, height = plotProperties$yMax, units = "in", res=100)
+	drawCard(cardTemplate, plotProperties)
 	dev.off()
 }
 
-
-drawCard <- function(cardTemplate,  
-										 bg.inner = "#211F1F",
-										 bg.mid = "#836E66",
-										 bg.outer = "#9A8984"){
+setImageDims <- function(cardTemplate, 
+												 bg.inner = "#211F1F",
+												 bg.mid = "#836E66",
+												 bg.outer = "#9A8984"){
+	
 	suppressMessages(attach(cardTemplate))
 	suppressMessages(attach(opt))
-	
-	### Make image
-	# plot Grid
-	# for the image size, assume that each square will be 1 cm square
-	# and a .2 cm gap between each row and each column, 
-	# and that there is a 1 cm border outside of the grid itself.
-	par(mar=rep(0,4))
 	
 	bspc=.5 #bspc for border space
 	xMin=0
@@ -219,10 +216,25 @@ drawCard <- function(cardTemplate,
 		short=short, long=long, 
 		bg.inner=bg.inner, bg.mid=bg.mid, bg.outer=bg.outer
 	)
+
+	return(plotProperties)
+}
+
+drawCard <- function(cardTemplate, plotProperties){
+	suppressMessages(attach(cardTemplate))
+	suppressMessages(attach(opt))
+	suppressMessages(attach(plotProperties))
 	
+	### Make image
+	# plot Grid
+	# for the image size, assume that each square will be 1 cm square
+	# and a .2 cm gap between each row and each column, 
+	# and that there is a 1 cm border outside of the grid itself.
+	par(mar=rep(0,4))
+
 	# create blank plot
 	grid.newpage()
-	vp=viewport(x = unit(-.18, "in"), y = unit(-.18, "in"),
+	vp=viewport(x = unit(0, "in"), y = unit(0, "in"),
 							width = unit(xMax, "in"), height = unit(yMax, "in"),
 							default.units = "in", just = c(0,0))
 	
@@ -242,8 +254,8 @@ drawCard <- function(cardTemplate,
 
 drawSpyBackground <- function(plotProperties, vp){
 	suppressMessages(attach(plotProperties))
-	outer.sizeX = xMax*.94
-	outer.sizeY = yMax*.94
+	outer.sizeX = xMax
+	outer.sizeY = yMax
 	grid.roundrect(x=xMid, y=yMid, width=outer.sizeX, height=outer.sizeY, 
 								 default.units="in",just="centre", 
 								 r=unit(0.4, "in"),
@@ -254,7 +266,10 @@ drawSpyBackground <- function(plotProperties, vp){
 								 default.units="in",just="centre", 
 								 r=unit(0.3, "in"),
 								 gp=gpar(fill=bg.mid, col="black"), vp=vp)
-	grid.roundrect(x=xMid, y=yMid, width=xMax*.77, height=yMax*.77, 
+	# set inner.sizeX and Y so that it is never smaller than the area of the map spaces
+	inner.sizeX = max(width+.2, xMax*.77)
+	inner.sizeY = max(height+.2, yMax*.77)
+	grid.roundrect(x=xMid, y=yMid, width=inner.sizeX, height=inner.sizeY, 
 								 default.units="in",just="centre", 
 								 r=unit(0.15, "in"),
 								 gp=gpar(fill=bg.inner, col=NA), vp=vp)

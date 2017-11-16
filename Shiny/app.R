@@ -53,7 +53,9 @@ ui <- fluidPage(
          # 						max = 25, #output$ts,
          # 						value = defaultArgs$ib),
          textInput("ss", "set seed", value = NA, placeholder = "enter an integer"),
-      	submitButton("New Card")
+      	
+      	# The action button causes a new card to be made, even if no inputs have changed
+      	actionButton("theButton", "New Card")
       ),
       
       # Code names game spy card
@@ -67,6 +69,10 @@ ui <- fluidPage(
 server <- function(input, output) {
 
 	output$SpyMap <- renderImage({
+		
+		# Take a dependency on input$theButton. This will run once initially,
+		# because the value changes from NULL to 0.
+		input$theButton
 
 		useArgs = defaultArgs
 		

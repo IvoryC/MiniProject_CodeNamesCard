@@ -9,8 +9,8 @@
 
 library(shiny)
 source("../R/CodeNamesCard_functions.R")
-output = list()
-output$ts = 25
+
+# defaultArgs is defined in global.R
 
 # Define UI
 ui <- fluidPage(
@@ -26,93 +26,67 @@ ui <- fluidPage(
       							"Rows in grid:",
       							width = 125,
       							min = 2, max = 20, step=1,
-      							value = 5),
+      							value = defaultArgs$height),
       	numericInput("width",
       							"Columns in grid:",
       							width = 125,
       							min = 2, max = 20, step=1,
-      							value = 5),
+      							value = defaultArgs$width),
       	sliderInput("assassin",
       							"Number of assassins:",
       							min = 0,
       							max = 25, #output$ts,
-      							value = 1),
+      							value = defaultArgs$assassin),
          sliderInput("red",
          						"red team spaces:",
          						min = 2,
          						max = 20,
-         						value = 5),#TODO make this a random selection based on output
+         						value = defaultArgs$red),#TODO make this a random selection based on output
          sliderInput("blue",
          						"blue team spaces:",
          						min = 2,
          						max = 20,
-         						value = 6), #TODO make this a random selection based on output
+         						value = defaultArgs$blue), #TODO make this a random selection based on output
          sliderInput("ib",
          						"innocent by-standers:",
          						min = 0,
          						max = 25, #output$ts,
-         						value = 13),
-         textInput("ss", "set seed", value = NA, placeholder = "enter an integer")
+         						value = defaultArgs$ib),
+         textInput("ss", "set seed", value = NA, placeholder = "enter an integer"),
+      	submitButton("New Card")
       ),
       
       # Code names game spy card
       mainPanel(
-         imageOutput("SpyMap"),
-         textOutput("inputObject")
+         imageOutput("SpyMap")
       )
    )
 )
 
 # Define server logic required to design and draw the card
 server <- function(input, output) {
-	
-	# for (nam in names(input)){
-	# 	args[nam] = input$`nam`
-	# }
-	# a = input$red
-	
-
-	# opt = processOptions(args)
-	# cardTemplate = assembleCard(opt)
-	#cardTemplate = doStuff()
-	
-	args = list(height=5,
-							width=5,
-							assassin=1,
-							help=FALSE,
-							ib=13,
-							red=5,
-							blue=6,
-							outfile="SpyMap.png")
-	
 
 	output$SpyMap <- renderImage({
 
-		args$height = input$height
-		args$width = input$width
-		args$assassin = input$assassin
-		args$help = input$help
-		args$ib = input$ib
-		args$red = input$red
-		args$blue = input$blue
+		useArgs = defaultArgs
+		
+		useArgs$height = input$height
+		useArgs$width = input$width
+		useArgs$assassin = input$assassin
+		useArgs$help = input$help
+		useArgs$ib = input$ib
+		useArgs$red = input$red
+		useArgs$blue = input$blue
 
-		opt = processOptions(args)
+		opt = processOptions(useArgs)
 		cardTemplate = assembleCard(opt)
 		
 		outfile <- tempfile(fileext='.png')
 		drawAndSaveCard(outfile, cardTemplate)
-		#drawCard(cardTemplate)
-		list(src = outfile,
+
+				list(src = outfile,
 				 alt = "This is alternate text")
-		#plot(1:10, 1:10)
 	})
-	
-	output$inputObject <- renderText({
-		nam="red"
-		#paste(unlist(input[nam]), collapse=" ")
-		#as.character(input$`nam`)
-		input$red
-		})
 }
 
 # Run the application 

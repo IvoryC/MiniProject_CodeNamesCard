@@ -24,7 +24,7 @@ main <- function(){
 	
 	cardTemplate = assembleCard(opt)
 	
-	drawCard(cardTemplate)
+	drawAndSaveCard(opt$outfile, cardTemplate)
 
 	# Show the saved image (works on unix, not sure if this works on windows)
 	system(paste("open", opt$outfile))
@@ -65,8 +65,8 @@ processOptions <- function(opt){ # function(opt){
 	#args <- commandArgs(trailingOnly = T)
 	
 	# for development
-	opt
-	save("opt", file="testing.Rdata")
+	# opt
+	# save("opt", file="testing.Rdata")
 	
 	# If -s is not null, set the seed.
 	if (!is.null(opt$ss)){
@@ -237,6 +237,13 @@ makeTransparent <- function(color, alpha=.5){
   return(rgb(red=matrix[,"red"], green=matrix[,"green"], blue=matrix[,"blue"], alpha=matrix[,"alpha"]))
 }
 
+drawAndSaveCard <- function(fname, ...){
+	png(filename=fname)
+	drawCard(...)
+	dev.off()
+}
+
+
 drawCard <- function(cardTemplate,  
                      bg.inner = "#211F1F",
                      bg.mid = "#836E66",
@@ -249,9 +256,7 @@ drawCard <- function(cardTemplate,
   # for the image size, assume that each square will be 1 cm square
   # and a .2 cm gap between each row and each column, 
   # and that there is a 1 cm border outside of the grid itself.
-  png(filename=opt$outfile)
   par(mar=rep(0,4))
-  
   
   bspc=.5 #bspc for border space
   xMin=0
@@ -288,8 +293,6 @@ drawCard <- function(cardTemplate,
   
   # draw border boxes indicating which team goes first by adding colored rectangles at the border
   drawBorderBoxes(plotProperties, vp=vp)
-
-  dev.off()
   
 }
 

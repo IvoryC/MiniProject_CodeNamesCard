@@ -153,6 +153,10 @@ assembleCard <- function(opt){
 						 rep("#017ED7", blue), # blue
 						 rep("#FE5148", red)) # red
 	
+	# because the added traits in the order: assassin, ib, blue, red
+	# we know that the last item in the color vector is red, and the (assassin+ib+1)th is blue.
+	firstCol = ifelse(first=="blue", colors[assassin+ib+1], colors[ts])
+	
 	innerCol = rep(NA, ts)
 	for (i in 1:ts){
 		innerCol[i] = makeTransparent(colors[i], .7)
@@ -169,6 +173,7 @@ assembleCard <- function(opt){
 											columns=columns,
 											rows=rows,
 											colors=colors,
+											firstCol=firstCol,
 											innerCol=innerCol,
 											pchs=pchs)
 	return(cardTemplate)
@@ -365,9 +370,6 @@ drawBorderBoxes <- function(plotProperties, vp){
 	# TODO - do something more systematic than this ad-hoc trial and error way of setting values .915 and .085
 	#short=.2 #moved up to top of border plotting
 	#long=.5
-	# because the added traits in the order: assassin, ib, blue, red
-	# we know that the last item in the color vector is red, and the (assassin+ib+1)th is blue.
-	firstCol = ifelse(first=="blue", colors[assassin+ib+1], colors[ts])
 	bord.w=c(short, long, short, long)
 	bord.h=c(long, short, long, short)
 	grid.rect(x=locX, y=locY,

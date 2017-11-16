@@ -19,10 +19,9 @@
 library(shiny)
 source("../R/CodeNamesCard_functions.R")
 
-# defaultArgs is defined in global.R
-
 # Define UI
 ui <- fluidPage(
+	
    
    # Application title
    titlePanel("Code Names Spy Card"),
@@ -35,32 +34,32 @@ ui <- fluidPage(
       							"Rows in grid:",
       							width = 125,
       							min = 2, max = 20, step=1,
-      							value = defaultArgs$height),
+      							value = 5),
       	numericInput("width",
       							"Columns in grid:",
       							width = 125,
       							min = 2, max = 20, step=1,
-      							value = defaultArgs$width),
+      							value = 5),
       	sliderInput("assassin",
       							"Number of assassins:",
       							min = 0,
       							max = 25, #output$ts,
-      							value = defaultArgs$assassin),
+      							value = 1),
          sliderInput("red",
          						"red team spaces:",
          						min = 2,
          						max = 20,
-         						value = defaultArgs$red),#TODO make this a random selection based on output
+         						value = 5),#TODO make this a random selection based on output
          sliderInput("blue",
          						"blue team spaces:",
          						min = 2,
          						max = 20,
-         						value = defaultArgs$blue), #TODO make this a random selection based on output
+         						value = 6), #TODO make this a random selection based on output
          # sliderInput("ib",
          # 						"innocent by-standers:",
          # 						min = 0,
          # 						max = 25, #output$ts,
-         # 						value = defaultArgs$ib),
+         # 						value = 13),
          textInput("ss", "set seed", value = NA, placeholder = "enter an integer"),
       	
       	# The action button causes a new card to be made, even if no inputs have changed
@@ -82,16 +81,19 @@ server <- function(input, output) {
 		# Take a dependency on input$theButton. This will run once initially,
 		# because the value changes from NULL to 0.
 		input$theButton
-
-		useArgs = defaultArgs
+		
+		#useArgs = defaultArgs
+		useArgs = list()
 		
 		useArgs$height = input$height
 		useArgs$width = input$width
 		useArgs$assassin = input$assassin
-		useArgs$help = input$help
-		useArgs$ib = input$ib
+		useArgs$help = FALSE
+		useArgs$ib = NULL
 		useArgs$red = input$red
 		useArgs$blue = input$blue
+		
+		useArgs$first = ifelse(useArgs$blue >= useArgs$red, "blue", "red")
 
 		opt = processOptions(useArgs)
 		cardTemplate = assembleCard(opt)

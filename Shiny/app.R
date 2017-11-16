@@ -7,6 +7,15 @@
 #    http://shiny.rstudio.com/
 #
 
+
+# TODO - make inputs reactive, so only the permissible range is possible
+# TODO - the outside boxes are always red, even when they should be blue.
+# TODO - try to make the whole thing faster
+# TODO - add hover note about what set seed is
+# TODO - make image re-size to fill horizontal space (maybe?)
+# BIG TODO - when changes are made without clicking 'new card', 
+#						 modify the minimum number of spaces in the existing card, if possible animate.
+
 library(shiny)
 source("../R/CodeNamesCard_functions.R")
 

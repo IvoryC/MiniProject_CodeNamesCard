@@ -93,8 +93,6 @@ server <- function(input, output) {
 		useArgs$red = input$red
 		useArgs$blue = input$blue
 		
-		useArgs$first = ifelse(useArgs$blue >= useArgs$red, "blue", "red")
-
 		opt = processOptions(useArgs)
 		cardTemplate = assembleCard(opt)
 		

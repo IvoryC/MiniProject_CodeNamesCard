@@ -45,6 +45,12 @@ processOptions <- function(opt){ # function(opt){
 	
 	# if neither -r nor -b is null
 	if (!is.null(opt$blue) & !is.null(opt$red)){
+		# The team with more squares goes first
+		opt$first = ifelse(opt$blue >= opt$red, "blue", "red")
+		# if they have the same number, randomly pick one
+		if (opt$blue == opt$red){
+			opt$first = sample(c("blue", "red"), size=1)
+		}
 		# calculate open squares, total - assassin - red - blue
 		openSq = opt$ts - opt$assassin - opt$blue - opt$red
 		if (openSq < 0) {

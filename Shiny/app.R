@@ -107,3 +107,25 @@ server <- function(input, output) {
 # Run the application 
 shinyApp(ui = ui, server = server)
 
+# To deploy on shiny.io
+# setwd("../Shiny/")
+##### remove the "../R/" from source("../R/CodeNamesCard_functions.R")
+# system("cp ../R/CodeNamesCard_functions.R .")
+# deployApp(appDir = getwd(), 
+# 					appFiles = c("app.R", "../R/CodeNamesCard_functions.R"),
+# 					appTitle="Code Names Spy Card")
+##### printed response:
+# Preparing to deploy application...DONE
+# Uploading bundle for application: 236603...DONE
+# Deploying bundle: 1080449 for application: 236603 ...
+# Waiting for task: 496343021
+# building: Processing bundle: 1080449
+# building: Building image: 1080580
+# building: Installing packages
+# building: Installing files
+# building: Pushing image: 1080580
+# deploying: Starting instances
+# rollforward: Activating new instances
+# unstaging: Stopping old instances
+# Application successfully deployed to https://ivoryblak.shinyapps.io/code_names_spy_card/
+

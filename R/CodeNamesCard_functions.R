@@ -402,13 +402,14 @@ drawSymbols <- function(cardTemplate, vp){
 drawBorderBoxes <- function(plotProperties, vp){
 	# draw border boxes indicating which team goes first by adding colored rectangles at the border
 	suppressMessages(attach(plotProperties))
-	locX=c(xMax*.085, xMid, xMax*.915, xMid) #left, top, right, bottom
-	locY=c(yMid, yMax*.915, yMid, yMax*.085) #left, top, right, bottom
-	# TODO - do something more systematic than this ad-hoc trial and error way of setting values .915 and .085
-	#short=.2 #moved up to top of border plotting
-	#long=.5
-	bord.w=c(short, long, short, long)
-	bord.h=c(long, short, long, short)
+	# Set locations and sizes
+	# For all vectors use: left, top, right, bottom
+	fromEdgeMid = mean(c(fromEdgeSmall,fromEdgeBig))
+	locX=c(xMin+fromEdgeMid, xMid, xMax-fromEdgeMid, xMid) 
+	locY=c(yMid, yMax-fromEdgeMid, yMid, yMin+fromEdgeMid) 
+	bord.w=c(short, long, short, long) 
+	bord.h=c(long, short, long, short) 
+	# draw the boxes
 	grid.rect(x=locX, y=locY,
 						width=unit(bord.w,"in"), 
 						height=unit(bord.h, "in"),

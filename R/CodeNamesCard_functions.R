@@ -210,7 +210,13 @@ setImageDims <- function(cardTemplate,
 	suppressMessages(attach(cardTemplate))
 	suppressMessages(attach(opt))
 	
-	bspc=.5 #bspc for border space
+	# The border is everything from the edge of the outer grid squares to the edge of the card
+	# because it is easiest to draw the grid squares centered at x=1 for row=1, with grid space allotment of 1,
+	# there is automatically a 1/2 grid space given to the border.
+	# In the example card image, it looks like the border is about 1.2 times a single grid space width.
+	# Border SPaCe controls how much space is added, it should account for the sizes that are hard coded in the drawSpyBackground function.
+	# It should allow for the 3/5 inch outer border, the 2/5 inch middle, and the 1/2 inch inner border. (.6 + .4 + .5 - .5(given)) = 1 
+	bspc=1 #bspc for border space
 	xMin=0
 	xMax=width+1+2*bspc
 	xMid=mean(c(xMin, xMax))
@@ -218,7 +224,7 @@ setImageDims <- function(cardTemplate,
 	yMax=height+1+2*bspc
 	yMid=mean(c(yMin, yMax))
 	short=.2 # the short dimension of the little boxes on the border
-	long=.5 
+	long=.85 
 	
 	plotProperties = list(
 		bspc=bspc, 
@@ -264,6 +270,8 @@ drawCard <- function(cardTemplate, plotProperties){
 }
 
 drawSpyBackground <- function(plotProperties, vp){
+	# The outermost border is drawn by adding a rounded rectangle the same size as the entire card.
+	# The width of this "border" is 1/2 the difference between the size of this rectangle and the middle one. 
 	suppressMessages(attach(plotProperties))
 	outer.sizeX = xMax
 	outer.sizeY = yMax
@@ -271,15 +279,17 @@ drawSpyBackground <- function(plotProperties, vp){
 								 default.units="in",just="centre", 
 								 r=unit(0.4, "in"),
 								 gp=gpar(fill=bg.outer, col=NA), vp=vp)
-	mid.sizeX = xMax*.85
-	mid.sizeY = yMax*.85
+	# The width of the outer border should be 3/5ths the width of one grid square, which is my 1 inch unit.
+	# So the mid border's rectangle should be the same dimensions as the outer one, less 2 * (3/5)
+	mid.sizeX = outer.sizeX - (6/5)
+	mid.sizeY = outer.sizeY - (6/5)
 	grid.roundrect(x=xMid, y=yMid, width=mid.sizeX, height=mid.sizeY, 
 								 default.units="in",just="centre", 
 								 r=unit(0.3, "in"),
 								 gp=gpar(fill=bg.mid, col="black"), vp=vp)
-	# set inner.sizeX and Y so that it is never smaller than the area of the map spaces
-	inner.sizeX = max(width+.2, xMax*.77)
-	inner.sizeY = max(height+.2, yMax*.77)
+	# The width of the middle border should be 2/5ths the width of one grid square.
+	inner.sizeX = mid.sizeX - (4/5) # max(width+.2, mid.sizeX - (4/5)) # set inner.sizeX and Y so that it is never smaller than the area of the map spaces
+	inner.sizeY = mid.sizeY - (4/5) # max(height+.2, mid.sizeY - (4/5))
 	grid.roundrect(x=xMid, y=yMid, width=inner.sizeX, height=inner.sizeY, 
 								 default.units="in",just="centre", 
 								 r=unit(0.15, "in"),
@@ -387,7 +397,7 @@ drawBorderBoxes <- function(plotProperties, vp){
 	# then the transparaent version of the color, then white again for a bright little core
 	for (i in 1:4){ # round rect only does one at a time, so we have to use a loop.
 		# first white layer
-		f=.4 # scaling factor relative to the sizes above for the entire rectangle
+		f=.6 # scaling factor relative to the sizes above for the entire rectangle
 		grid.roundrect(x=locX[i], y=locY[i], r=unit(0.05, "in"),
 									 width=unit(bord.w*f,"in")[i],
 									 height=unit(bord.h*f, "in")[i],
@@ -400,7 +410,7 @@ drawBorderBoxes <- function(plotProperties, vp){
 									 default.units="in", just="centre",
 									 gp=gpar(fill=makeTransparent(firstCol,.7), col=NA, lwd=1), vp=vp)
 		# final white layer
-		f=.2
+		f=.4
 		grid.roundrect(x=locX[i], y=locY[i], r=unit(0.05, "in"),
 									 width=unit(bord.w*f,"in")[i],
 									 height=unit(bord.h*f, "in")[i],

@@ -1,9 +1,12 @@
 ### Functions for CodeNamesCard.R
 # These are defined here so that the shiny app can source the functions without running main.
+# This code can be used with iether the CodeNamesCard.R script or the app.R shiny interface.
 
 library("grid")
 
-
+# Take in the options given by the user (which must already be collected into a list by some parser)
+# and fill in all remaining options with default values.
+# Many of the defaults are set dynamically based on the constraints imposed by the user selections.
 processOptions <- function(opt){ # function(opt){
 	# Take arguments from the command line
 	#args <- commandArgs(trailingOnly = T)
@@ -141,6 +144,8 @@ processOptions <- function(opt){ # function(opt){
 }
 
 
+# This function determines the type for each grid square, 
+# and the properties associeated with that type, such as color and symbol.
 assembleCard <- function(opt){
 	suppressMessages(attach(opt)) # so we don't have to write opt$ every time
 	
@@ -194,7 +199,7 @@ makeTransparent <- function(color, alpha=.5){
 
 drawAndSaveCard <- function(fname, cardTemplate){
 	
-	plotProperties = setImageDims(cardTemplate)
+	plotProperties = setPlotProperties(cardTemplate)
 	
 	png(filename=fname, 
 			width = plotProperties$xMax, height = plotProperties$yMax, units = "in", res=100)
@@ -202,7 +207,11 @@ drawAndSaveCard <- function(fname, cardTemplate){
 	dev.off()
 }
 
-setImageDims <- function(cardTemplate, 
+# Properties for the individual grid squares are set in the assembleCard function.
+# All other properties, such as overall size, border widths and colors, are specified here.
+# No actions are taken here, just setting values.
+# The actions using these values are handled by the draw functions, orchestrated by drawCard.
+setPlotProperties <- function(cardTemplate, 
 												 bg.inner = "#211F1F",
 												 bg.mid = "#836E66",
 												 bg.outer = "#9A8984"){
@@ -214,7 +223,7 @@ setImageDims <- function(cardTemplate,
 	# because it is easiest to draw the grid squares centered at x=1 for row=1, with grid space allotment of 1,
 	# there is automatically a 1/2 grid space given to the border.
 	# In the example card image, it looks like the border is about 1.2 times a single grid space width.
-	# Border SPaCe controls how much space is added, it should account for the sizes that are hard coded in the drawSpyBackground function.
+	# Border SPaCe controls how much space is added, it should account for the sizes that are hard coded below.
 	# It should allow for the 3/5 inch outer border, the 2/5 inch middle, and the 1/2 inch inner border. (.6 + .4 + .5 - .5(given)) = 1 
 	bspc=1 #bspc for border space
 	xMin=0
@@ -226,12 +235,33 @@ setImageDims <- function(cardTemplate,
 	short=.2 # the short dimension of the little boxes on the border
 	long=.85 
 	
+	# border widths
+	# The outermost border is drawn by adding a rounded rectangle the same size as the entire card.
+	# The width of this "border" is 1/2 the difference between the size of this rectangle and the middle one. 
+	outer.sizeX = xMax
+	outer.sizeY = yMax
+	# The width of the outer border should be 3/5ths the width of one grid square, which is my 1 inch unit.
+	# So the mid border's rectangle should be the same dimensions as the outer one, less 2 * (3/5)
+	mid.sizeX = outer.sizeX - (6/5)
+	mid.sizeY = outer.sizeY - (6/5)
+	# The width of the middle border should be 2/5ths the width of one grid square.
+	inner.sizeX = mid.sizeX - (4/5) # max(width+.2, mid.sizeX - (4/5)) # set inner.sizeX and Y so that it is never smaller than the area of the map spaces
+	inner.sizeY = mid.sizeY - (4/5) # max(height+.2, mid.sizeY - (4/5))
+	# distance from the middle border layer to the outer edge (xMax, yMax)
+	fromEdgeSmall = (outer.sizeX - mid.sizeX)/2 
+	fromEdgeBig = fromEdgeSmall + short
+	
 	plotProperties = list(
 		bspc=bspc, 
 		xMin=xMin,  xMax=xMax, xMid=xMid,
 		yMin=yMin,  yMax=yMax, yMid=yMid,
 		short=short, long=long, 
-		bg.inner=bg.inner, bg.mid=bg.mid, bg.outer=bg.outer
+		bg.inner=bg.inner, bg.mid=bg.mid, bg.outer=bg.outer,
+		# border widths
+		outer.sizeX=outer.sizeX, outer.sizeY=outer.sizeY,
+		mid.sizeX=mid.sizeX, mid.sizeY=mid.sizeY,
+		inner.sizeX=inner.sizeX, inner.sizeY=inner.sizeY,
+		fromEdgeSmall=fromEdgeSmall, fromEdgeBig=fromEdgeBig
 	)
 
 	return(plotProperties)
@@ -270,32 +300,23 @@ drawCard <- function(cardTemplate, plotProperties){
 }
 
 drawSpyBackground <- function(plotProperties, vp){
-	# The outermost border is drawn by adding a rounded rectangle the same size as the entire card.
-	# The width of this "border" is 1/2 the difference between the size of this rectangle and the middle one. 
 	suppressMessages(attach(plotProperties))
-	outer.sizeX = xMax
-	outer.sizeY = yMax
+	# outermost border, drawn as a rectangle
 	grid.roundrect(x=xMid, y=yMid, width=outer.sizeX, height=outer.sizeY, 
 								 default.units="in",just="centre", 
 								 r=unit(0.4, "in"),
 								 gp=gpar(fill=bg.outer, col=NA), vp=vp)
-	# The width of the outer border should be 3/5ths the width of one grid square, which is my 1 inch unit.
-	# So the mid border's rectangle should be the same dimensions as the outer one, less 2 * (3/5)
-	mid.sizeX = outer.sizeX - (6/5)
-	mid.sizeY = outer.sizeY - (6/5)
+	# middle border
 	grid.roundrect(x=xMid, y=yMid, width=mid.sizeX, height=mid.sizeY, 
 								 default.units="in",just="centre", 
 								 r=unit(0.3, "in"),
 								 gp=gpar(fill=bg.mid, col="black"), vp=vp)
-	# The width of the middle border should be 2/5ths the width of one grid square.
-	inner.sizeX = mid.sizeX - (4/5) # max(width+.2, mid.sizeX - (4/5)) # set inner.sizeX and Y so that it is never smaller than the area of the map spaces
-	inner.sizeY = mid.sizeY - (4/5) # max(height+.2, mid.sizeY - (4/5))
+	# inner border
 	grid.roundrect(x=xMid, y=yMid, width=inner.sizeX, height=inner.sizeY, 
 								 default.units="in",just="centre", 
 								 r=unit(0.15, "in"),
 								 gp=gpar(fill=bg.inner, col=NA), vp=vp)
-	fromEdgeSmall = (outer.sizeX - mid.sizeX)/2 # distance from the middle border layer to the outer edge (xMax, yMax)
-	fromEdgeBig = fromEdgeSmall + short # try to keep this under the distance from the inner layer to the edge
+	# Polygons to make the outer border appear to cut into the middle border
 	gp.outer=gpar(fill=bg.outer, col=bg.outer, lwd=2.2)
 	# right side
 	rightX = xMid+(mid.sizeX/2) + c(0,-short, -short, 0) #c(xMid+(mid.sizeX/2), xMid+(mid.sizeX/2)-short, xMid+(mid.sizeX/2)-short, xMid+(mid.sizeX/2))

@@ -40,26 +40,9 @@ ui <- fluidPage(
       							width = 125,
       							min = 2, max = 20, step=1,
       							value = 5),
-      	sliderInput("assassin",
-      							"Number of assassins:",
-      							min = 0,
-      							max = 25, #output$ts,
-      							value = 1),
-         sliderInput("red",
-         						"red team spaces:",
-         						min = 2,
-         						max = 20,
-         						value = 5),#TODO make this a random selection based on output
-         sliderInput("blue",
-         						"blue team spaces:",
-         						min = 2,
-         						max = 20,
-         						value = 6), #TODO make this a random selection based on output
-         # sliderInput("ib",
-         # 						"innocent by-standers:",
-         # 						min = 0,
-         # 						max = 25, #output$ts,
-         # 						value = 13),
+
+      	uiOutput("sliders"),
+
          textInput("ss", "set seed", value = NA, placeholder = "enter an integer"),
       	
       	# The action button causes a new card to be made, even if no inputs have changed
@@ -81,6 +64,34 @@ server <- function(input, output) {
 		# Take a dependency on input$theButton. This will run once initially,
 		# because the value changes from NULL to 0.
 		input$theButton
+		
+		ts = input$height * input$width
+		maxAss = ts-1 #heehee
+		assVal = ifelse(is.null(input$assassin), 1, min(input$assassin, maxAss))
+		maxRed = ts-max(c(input$assassin,1))
+		redVal = ifelse(is.null(input$red), 5, min(input$red, maxRed))
+		maxBlue = ts-input$assassin-input$red
+		blueVal = ifelse(is.null(input$blue), 5, min(input$blue, maxBlue))
+		
+		output$sliders <- renderUI({
+			tagList(
+				sliderInput("assassin",
+										"Number of assassins:",
+										min = 0, step=1,
+										max = maxAss, 
+										value = assVal ),
+				sliderInput("red",
+										"red team spaces:",
+										min = 0, step=1,
+										max = maxRed, 
+										value = redVal),
+				sliderInput("blue",
+										"blue team spaces:",
+										min = ifelse(input$assassin==0 & input$red==0, 1, 0), step=1, # require at least one space be non-bystander
+										max = maxBlue,
+										value = blueVal)
+			)
+		})
 		
 		#useArgs = defaultArgs
 		useArgs = list()

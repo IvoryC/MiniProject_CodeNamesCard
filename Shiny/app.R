@@ -41,7 +41,9 @@ ui <- fluidPage(
       							min = 2, max = 20, step=1,
       							value = 5),
 
-      	uiOutput("sliders"),
+      	uiOutput("assassin.slider"),
+      	uiOutput("red.slider"),
+      	uiOutput("blue.slider"),
 
          textInput("ss", "set seed", value = NA, placeholder = "enter an integer"),
       	
@@ -58,41 +60,57 @@ ui <- fluidPage(
 
 # Define server logic required to design and draw the card
 server <- function(input, output) {
+	
+	output$assassin.slider <- renderUI({
+		ts = input$height * input$width
+		maxAss = ts-1 #heehee
+		assVal = ifelse(is.null(input$assassin), 1, min(input$assassin, maxAss))
+		tagList(
+			sliderInput("assassin",
+									"Number of assassins:",
+									min = 0, step=1,
+									max = maxAss, 
+									value = assVal)
+		)
+	})
+	
+	output$red.slider <- renderUI({
+		ts = input$height * input$width
+		assVal = input$assassin
+		maxRed = ts-max(c(input$assassin,1))
+		redVal = ifelse(is.null(input$red), 5, min(input$red, maxRed))
+		tagList(
+			sliderInput("red",
+									"red team spaces:",
+									min = 0, step=1,
+									max = maxRed, 
+									value = redVal)
+		)
+	})
+	
+	output$blue.slider <- renderUI({
+		ts = input$height * input$width
+		assVal = input$assassin
+		redVal = input$red
+		maxBlue = ts-input$assassin-input$red
+		blueVal = ifelse(is.null(input$blue), 5, min(input$blue, maxBlue))
+		tagList(
+			sliderInput("blue",
+									"blue team spaces:",
+									min = ifelse(input$assassin==0 & input$red==0, 1, 0), step=1, # require at least one space be non-bystander
+									max = maxBlue,
+									value = blueVal)
+		)
+	})
+	
+
 
 	output$SpyMap <- renderImage({
 		
 		# Take a dependency on input$theButton. This will run once initially,
 		# because the value changes from NULL to 0.
 		input$theButton
-		
-		ts = input$height * input$width
-		maxAss = ts-1 #heehee
-		assVal = ifelse(is.null(input$assassin), 1, min(input$assassin, maxAss))
-		maxRed = ts-max(c(input$assassin,1))
-		redVal = ifelse(is.null(input$red), 5, min(input$red, maxRed))
-		maxBlue = ts-input$assassin-input$red
-		blueVal = ifelse(is.null(input$blue), 5, min(input$blue, maxBlue))
-		
-		output$sliders <- renderUI({
-			tagList(
-				sliderInput("assassin",
-										"Number of assassins:",
-										min = 0, step=1,
-										max = maxAss, 
-										value = assVal ),
-				sliderInput("red",
-										"red team spaces:",
-										min = 0, step=1,
-										max = maxRed, 
-										value = redVal),
-				sliderInput("blue",
-										"blue team spaces:",
-										min = ifelse(input$assassin==0 & input$red==0, 1, 0), step=1, # require at least one space be non-bystander
-										max = maxBlue,
-										value = blueVal)
-			)
-		})
-		
+
 		#useArgs = defaultArgs
 		useArgs = list()
 		

@@ -393,10 +393,12 @@ drawSymbols <- function(cardTemplate, vp){
 							pch=pchs, gp=gpar(fill=colors, col="black", lwd=.6),
 							default.units="in", vp=vp)
 	# the assassin X needs some extra help. Recall that assassin is the first group
+	if (assassin > 0) {
 	asns = 1:assassin
 	grid.points(x=columns[asns]+bspc, y=rows[asns]+bspc, size=unit(3.7, "char"),
 							pch=pchs[asns], gp=gpar(fill=colors, col="black", lwd=5),
 							default.units="in", vp=vp)
+	}
 }
 
 drawBorderBoxes <- function(plotProperties, vp){

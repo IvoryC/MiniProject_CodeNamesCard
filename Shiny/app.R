@@ -8,10 +8,7 @@
 #
 
 
-# TODO - make inputs reactive, so only the permissible range is possible
-# TODO - the outside boxes are always red, even when they should be blue.
 # TODO - try to make the whole thing faster
-# TODO - add hover note about what set seed is
 # TODO - make image re-size to fill horizontal space (maybe?)
 # BIG TODO - when changes are made without clicking 'new card', 
 #						 modify the minimum number of spaces in the existing card, if possible animate.
@@ -45,10 +42,13 @@ ui <- fluidPage(
       	uiOutput("red.slider"),
       	uiOutput("blue.slider"),
 
-         textInput("ss", "set seed", value = NULL, placeholder = "enter an integer"),
+      	textInput("ss", "set seed", value = NULL, placeholder = "enter an integer"),
       	
       	# The action button causes a new card to be made, even if no inputs have changed
-      	actionButton("theButton", "New Card")
+      	actionButton("theButton", "New Card"),
+      	
+      	# I would rather use something like the shinyBS::tipify, but only if I can get the "delay" option to work my inputs doen't get too visually noisy
+      	helpText("The maximum for each slider is limited by all of the options above it.")
       ),
       
       # Code names game spy card

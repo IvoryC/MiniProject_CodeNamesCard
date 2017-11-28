@@ -54,7 +54,8 @@ getArgs <- function(){
 		s=make_option(opt_str=c("-s", "--set-seed"), type="integer", default=NULL, 
 									help="set random seed to regenerate an identical card", dest="ss")
 	); 
-	opt_parser = OptionParser(option_list=option_list)
+	opt_parser = OptionParser(option_list=option_list,
+														epilogue="If only one dimension (height or width) is specified, \nthe other is set to match it, making a square grid. \n\nIf the number of spaces is specified for only one team (red or blue), \nthat team goes first and the other team is assigned one less space.\nSpecified value must be greater than 0.\n")
 	opt = parse_args(opt_parser)
 	
 	return(opt)

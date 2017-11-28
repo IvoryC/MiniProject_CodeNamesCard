@@ -15,8 +15,8 @@ processOptions <- function(opt){ # function(opt){
 	# opt
 	# save("opt", file="testing.Rdata")
 	
-	# If -s is not null, set the seed.
-	if (!is.null(opt$ss)){
+	# If -s is not null (and not an empty string), set the seed.
+	if (!(is.null(opt$ss) || opt$ss=="")){
 		set.seed(opt$ss)
 	}
 	

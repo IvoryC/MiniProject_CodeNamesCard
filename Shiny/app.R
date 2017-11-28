@@ -45,7 +45,7 @@ ui <- fluidPage(
       	uiOutput("red.slider"),
       	uiOutput("blue.slider"),
 
-         textInput("ss", "set seed", value = NA, placeholder = "enter an integer"),
+         textInput("ss", "set seed", value = NULL, placeholder = "enter an integer"),
       	
       	# The action button causes a new card to be made, even if no inputs have changed
       	actionButton("theButton", "New Card")
@@ -121,7 +121,9 @@ server <- function(input, output) {
 		useArgs$ib = NULL
 		useArgs$red = input$red
 		useArgs$blue = input$blue
-		
+		useArgs$ss = input$ss
+		ls = ls()
+
 		opt = processOptions(useArgs)
 		cardTemplate = assembleCard(opt)
 		

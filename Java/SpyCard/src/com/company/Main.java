@@ -3,22 +3,22 @@ package com.company;
 import org.apache.commons.cli.*;
 
 public class Main {
+    static Options options;
+    static CommandLineParser parser;
+    static CommandLine cmd = null;;
 
     public static void main(String[] args) {
         // write your code here
-        Options options = makeOptions();
-        //System.out.println(options);
+        options = makeOptions();
 
-        CommandLineParser parser = new DefaultParser();
-        CommandLine cmd = null;
+        parser = new DefaultParser();
+
         try {
             cmd = parser.parse( options, args);
         } catch (ParseException e) {
             e.printStackTrace();
             showHelp(options);
         }
-
-        //System.out.println(cmd.getOptionValue("h") == null);
 
         System.out.println("Here are the args:");
         for (String arg : args) {
@@ -30,6 +30,12 @@ public class Main {
         if (cmd.hasOption("h")){
             showHelp(options);
         }
+
+
+        // Use the command line options to creat a Spy Card
+        CodeNamesCard cnc = new CodeNamesCard(cmd);
+        System.out.println(cnc.opt);
+
 
     }
 
@@ -47,9 +53,9 @@ public class Main {
         return options;
     }
 
-    static private void showHelp(Options opts){
+    static private void showHelp(Options ops){
         // automatically generate the help statement
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp( "java -jar CodeNamesCard.jar [-W,H,-a,-i,-r,-b,-o,-s,-h]", opts);
+        formatter.printHelp( "java -jar CodeNamesCard.jar [-W,H,-a,-i,-r,-b,-o,-s,-h]", ops);
     }
 }

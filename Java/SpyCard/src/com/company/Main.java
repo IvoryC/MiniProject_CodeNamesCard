@@ -7,7 +7,7 @@ public class Main {
     public static void main(String[] args) {
         // write your code here
         Options options = makeOptions();
-        System.out.println(options);
+        //System.out.println(options);
 
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = null;
@@ -15,9 +15,10 @@ public class Main {
             cmd = parser.parse( options, args);
         } catch (ParseException e) {
             e.printStackTrace();
+            showHelp(options);
         }
 
-        System.out.println(cmd.getOptions());
+        //System.out.println(cmd.getOptionValue("h") == null);
 
         System.out.println("Here are the args:");
         for (String arg : args) {
@@ -25,6 +26,11 @@ public class Main {
         }
         System.out.println("The number of rows will be: " + cmd.getOptionValue("H", "22"));
         System.out.println("Thanks!");
+
+        if (cmd.hasOption("h")){
+            showHelp(options);
+        }
+
     }
 
     static private Options makeOptions() {
@@ -37,6 +43,13 @@ public class Main {
         options.addOption("b", "blue", true, "number of blue team squares");
         options.addOption("o", "outfile", true, "file name to save image");
         options.addOption("s", "set-seed", true, "set random seed to regenerate an identical card");
+        options.addOption("h", "help", false, "print help message");
         return options;
+    }
+
+    static private void showHelp(Options opts){
+        // automatically generate the help statement
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.printHelp( "java -jar CodeNamesCard.jar [-W,H,-a,-i,-r,-b,-o,-s,-h]", opts);
     }
 }

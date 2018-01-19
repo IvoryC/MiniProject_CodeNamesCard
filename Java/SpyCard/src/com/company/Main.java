@@ -7,7 +7,7 @@ public class Main {
     static CommandLineParser parser;
     static CommandLine cmd = null;;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         // write your code here
         options = makeOptions();
 

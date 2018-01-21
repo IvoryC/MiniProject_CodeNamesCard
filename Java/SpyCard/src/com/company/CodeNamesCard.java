@@ -11,19 +11,67 @@ import java.lang.Math;
 public class CodeNamesCard {
 
     // in case we need one
-    public Random rand = new Random();
-
+//    public Random rand = new Random();
     public HashMap<String, Integer> opt;
     public HashMap<String, String> stringOptions;
+    private int height;
+    private int width;
+    private int totalSquares;
+    private int assassin;
+    private int inocents;
+    private int red;
+    private int blue;
+    private String first;
+    private String second;
 
-    CodeNamesCard(CommandLine cmd) throws Exception {
-        setOptions(cmd);
+
+    public int getHeight() {
+        return height;
     }
 
-    private void setOptions(CommandLine cmd) throws Exception {
+    public int getWidth() {
+        return width;
+    }
+
+    public int getTotalSquares() {
+        return totalSquares;
+    }
+
+    public int getAssassin() {
+        return assassin;
+    }
+
+    public int getInocents() {
+        return inocents;
+    }
+
+    public int getRed() {
+        return red;
+    }
+
+    public int getBlue() {
+        return blue;
+    }
+
+    public String getFirst() {
+        return first;
+    }
+
+    public String getSecond() {
+        return second;
+    }
+
+    CodeNamesCard(CommandLine cmd) throws Exception {
+        Random rand = new Random();
+        String[] rb = {"r", "b"};
+
+        /*TODO: instead of making these HashMaps,
+        just take the options directly from the commandLine object and set the fields.
+        Then refactor to query the fields, not the HashMaps,
+        And remove the bit at the bottom that transfers the values from the HashMaps to the fields.
+         */
         HashMap<String, Integer> opt = new HashMap<String, Integer>();
         HashMap<String, String> stringOpt = new HashMap<String, String>();
-        String[] rb = {"r", "b"};
 
         Option[] processedOpts = cmd.getOptions();
         for (Option po : processedOpts) {
@@ -34,7 +82,7 @@ public class CodeNamesCard {
 
         // defaults - if it doesn't have a value, give it this value
         opt.putIfAbsent("a", 1);
-        stringOpt.putIfAbsent("o", "SpyMap.png");
+        //stringOpt.putIfAbsent("o", "SpyMap.png");
 
 
         //If -s is not null (and not an empty string), set the seed.
@@ -42,6 +90,7 @@ public class CodeNamesCard {
             rand.setSeed(opt.get("s"));
         }
         //TODO: if s is not specified, pick a random int and use that---so any card can be recreated.
+        //TODO: move the set seed stuff to main to be passed to CardLayout
 
         // if both height and width are absent, set both to 5.
         // if only one is absent, set it to match the other.
@@ -130,11 +179,12 @@ public class CodeNamesCard {
                 }
             }
             // randomly pick red or blue to be "first", the other second
-            stringOpt.put("first", rb[rand.nextInt(1)]);
+            int rint = rand.nextInt(2);
+            stringOpt.put("first", rb[rint]);
             // make the other one second
             stringOpt.put("second", stringOpt.get("first").equals("r") ? "b" : "r");
             // assign 'first' to get open squares/2 rounded up
-            opt.put(stringOpt.get("first"), (int) Math.ceil(opt.get("openSq") / 2));
+            opt.put(stringOpt.get("first"), (int) Math.floor(opt.get("openSq") / 2)+1 ); //not sure why ceil didn't work
             // assign 'second' to get open squares/2 rounded down
             opt.put(stringOpt.get("second"), (int) Math.floor(opt.get("openSq") / 2));
             // end the assumption that both red and blue are absent
@@ -171,8 +221,32 @@ public class CodeNamesCard {
         // end assumption that one but not the other was specified
         }
 
-        this.opt = opt;
-        this.stringOptions = stringOpt;
+//        this.opt = opt;
+//        this.stringOptions = stringOpt;
+        this.height = opt.get("H");
+        this.width = opt.get("W");
+        this.totalSquares = opt.get("ts");
+        this.assassin = opt.get("a");
+        this.inocents = opt.get("i");
+        this.red = opt.get("r");
+        this.blue = opt.get("b");
+        this.first = stringOpt.get("first");
+        this.second = stringOpt.get("second");
+
     }
 
+    @Override
+    public String toString() {
+        return "CodeNamesCard{" +
+                "height=" + height +
+                ", width=" + width +
+                ", total squares=" + totalSquares +
+                ", assassin=" + assassin +
+                ", inocents=" + inocents +
+                ", red=" + red +
+                ", blue=" + blue +
+                ", first='" + first + '\'' +
+                ", second='" + second + '\'' +
+                '}';
+    }
 }

@@ -34,7 +34,13 @@ public class Main {
 
         // Use the command line options to creat a Spy Card
         CodeNamesCard cnc = new CodeNamesCard(cmd);
-        System.out.println(cnc.opt);
+//        System.out.println(cnc.opt);
+//        System.out.println(cnc.stringOptions);
+        System.out.println(cnc);
+
+        // TODO: grab the outfile option here, it doesn't belong in the CodeNamesCard object.
+
+        //TODO: move the set seed stuff to main to be passed to CardLayout
 
 
     }
